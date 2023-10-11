@@ -1,7 +1,9 @@
 from datetime import datetime
+import json
 import os
 from Lager import Lager
 from Kvitton import Kvitto
+from Produkter import Produkt
 
 def ValHantering(prompt,min_värde, max_värde):
     while True:
@@ -53,8 +55,10 @@ def produkt_meny():
             except ValueError:
                 print("Error: Välj ett positivt pris tack")
                 continue
-            lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris)
-            lager.spara_filer("produkt_och_kampanj.json")
+            produkt = Produkt(produkt_id, produkt_namn, produkt_pris)
+            lager.lägg_till_produkt(produkt)
+            lager.spara_produkt_i_dict(produkt_id, produkt)
+            print(f"Produkten {produkt_namn} har lagts till med id {produkt_id}")
         elif val_för_produkt_meny == 2:
             produkt_id = input("Vad är ID på produkten du vill ta bort?: ")
             lager.ta_bort_produkt(produkt_id)
@@ -75,6 +79,7 @@ def produkt_meny():
                     print("Error: Ange ett positivt heltal.")
                 lager.uppdatera_produkt_pris(produkt_id, nytt_pris)
         elif val_för_produkt_meny == 5:
+            lager.spara_filer("produkt_och_kampanj.json", kvitto.Get_kvitto_nummer())
             break
 def kampanj_meny():
     print("1. Lägg till kampanj\n2. Ta bort kampanj\n3. Uppdatera existerande kampanj\n4. Tillbaka till Administraion")
@@ -82,7 +87,7 @@ def kampanj_meny():
         val_för_kampanj_meny = ValHantering((":"), min_värde=1, max_värde=4)
         if val_för_kampanj_meny == 1:
             lager.visa_lager()
-            produkt = input("Skriv namnet på produkten du vill ha på kampanj: ")
+            produkt = input("Skriv produktid på produkten du vill ha på kampanj: ")
             hitta_produkt = lager.sök_efter_produkt(produkt)
             if not hitta_produkt:
                 print("Produkten finns inte, försök igen")
@@ -104,7 +109,6 @@ def kampanj_meny():
         elif val_för_kampanj_meny == 4:
             break
 def nytt_kvitto():
-    kvitto = Kvitto()
     while True:
         print("Kassa")
         print("Kommandon:")
@@ -123,15 +127,20 @@ def nytt_kvitto():
             produkt_id = delar[0]
             antal = delar[1]
             hitta_produkter = lager.hämta_produkt_info(produkt_id)
+            print(hitta_produkter)
             if hitta_produkter is None:
                 print("Produkten finns inte, Försök igen")
                 continue
             namn = hitta_produkter[0]
+            print(namn)
             belopp = hitta_produkter[1]
+            print(belopp)
             kampanj_datum = hitta_produkter[2]
+            print(kampanj_datum)
             kampanj_pris = hitta_produkter[3]
+            print(kampanj_pris)
             try:
-                kvitto.Lägg_Till(namn,int(antal),float(belopp),kampanj_datum, kampanj_pris)
+                kvitto.Lägg_Till(namn, int(antal), float(belopp), kampanj_datum, kampanj_pris)
             except ValueError:
                 print("Mata in enligt formatet <Produktid> <Antal> eller PAY")
             kvitto.Skriv_kvitto()
@@ -147,6 +156,7 @@ def main():
     while True:
         val_main = print_main_meny()
         if val_main == 0:
+            lager.spara_filer("produkt_och_kampanj.json", kvitto.Get_kvitto_nummer())
             break
         elif val_main == 1:
             nytt_kvitto()
@@ -158,9 +168,10 @@ if __name__ == "__main__":
     kvitto = Kvitto()
     lager = Lager()
     if not os.path.isfile("produkt_och_kampanj.json"):
+        default_data = {'produkter': [], 'kampanjer': []}
         with open("produkt_och_kampanj.json", "a") as f:    
-            pass
-    lager.öppna_filer("produkt_och_kampanj.json")
+            json.dump(default_data, f)
+    lager.öppna_filer("produkt_och_kampanj.json", kvitto)
     print(lager.produkter)
     print(lager.kampanjer)
 

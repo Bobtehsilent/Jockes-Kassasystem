@@ -3,11 +3,11 @@
  #  - Create methods for adding products, updating quantities, and displaying product information.
 
 class Produkt:
-    def __init__(self, produkt_id:str, produkt_pris:float, produkt_namn:str) -> None:  # noqa: E501
+    def __init__(self, produkt_id:str,produkt_namn:str, produkt_pris:float) -> None:  # noqa: E501
         self.__produkt_id = produkt_id
         self.__produkt_pris = float(produkt_pris)
         self.__produkt_namn = produkt_namn
-
+        
         if self.__produkt_pris < 0:
             raise ValueError("Varans pris måste vara positiv.")
     @property

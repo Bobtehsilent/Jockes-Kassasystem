@@ -24,19 +24,23 @@ class KvittoRad:
         return self.__kampanj_pris
     def Get_Total_kampanj(self):
         return self.__count * self.__kampanj_pris
+    def set_pris(self, new_price):
+        self.__per_pris = new_price
 
 class Kvitto:
     def __init__(self) -> None:
-        self.__datum = datetime.now()
+        self.__datum = datetime.now().date()
         self.__kvitto_rad = []
         self.__nuvarande_kvitto_nummer = 0
     def Get_kvitto_nummer(self):
         return self.__nuvarande_kvitto_nummer
+    def set_kvitto_nummer(self, nummer):
+        self.__nuvarande_kvitto_nummer = nummer
     def Generera_kvitto(self):
         datum_nu = self.__datum
         datum_nu = datum_nu.strftime("%Y%m%d")
         self.__nuvarande_kvitto_nummer += 1
-        kvitto_text = f"\nKvitto Nummer: {self.__nuvarande_kvitto_nummer}"
+        kvitto_text = f"\nKvitto Nummer: {self.__nuvarande_kvitto_nummer}\n"
         for item in self.__kvitto_rad:
             kvitto_text += f"{item.Get_Name()}: {item.Get_Count()} x {item.Get_Per_Pris()} = {item.Get_Total()}\n"
         kvitto_text += "\n" + "*" * 40 + "\n"
@@ -45,26 +49,30 @@ class Kvitto:
         return self.__nuvarande_kvitto_nummer
 
     def Total_Summa(self):
-        sum = 0
+        total = 0
         for row in self.__kvitto_rad:
-            sum = sum + row.Get_Total()
-        return sum
+            total = total + row.Get_Total()
+        return total
     def Get_Datum(self):
         return self.__datum
+    
     def Lägg_Till(self, produkt_namn:str, count:int, per_pris:float, kampanj_datum:str, kampanj_pris:float):
         kvitto_rad = KvittoRad(produkt_namn, count, per_pris , kampanj_datum, kampanj_pris)
         for prdukt in self.__kvitto_rad:
             if prdukt.Get_Name() == kvitto_rad.Get_Name():
-                prdukt.Add_count()
+                prdukt.Add_count(count)
                 return
-        if kampanj_datum and kampanj_pris is not None:
+        if kampanj_datum and "," in kampanj_datum:
             parts = kampanj_datum.split(",")
-            start = datetime.strptime(parts[0],"%Y-%m-%d")
-            end = datetime.strptime(parts[1],"%Y-%m-%d")
-            currentDate = datetime.now().date()
-            if start <= currentDate <= end:
-                kvitto_rad = KvittoRad(produkt_namn, count, kampanj_datum, kampanj_pris, per_pris)
+            print(parts)
+            start = datetime.strptime(parts[0],"%Y-%m-%d").date()
+            end = datetime.strptime(parts[1],"%Y-%m-%d").date()
+            current_date = datetime.now().date()
+            print("Lägger till kampanjpris")
+            if start <= current_date <= end:
+                kvitto_rad.set_pris(kampanj_pris)
         self.__kvitto_rad.append(kvitto_rad)
+
     def Get_Kvittorad(self):
         return self.__kvitto_rad
     def Kolla_Kampanj_Inom_Datum(self, getDatum1, getDatum2):
@@ -93,9 +101,8 @@ class Kvitto:
             count = rad.Get_Count()
             per_pris = rad.Get_Per_Pris()
             kampanj_datum = rad.Get_Kampanj_datum()
-            kampanj_pris = rad.Get_Kampanj_Pris
             if kampanj_datum is not None:
-                print(f"{produkt_namn} x {count} (Kampanjpris: {kampanj_pris} SEK)")
+                print(f"{produkt_namn} x {count} (Kampanjpris: {per_pris} SEK)")
             else:
                 print(f"{produkt_namn} x {count} (Pris: {per_pris} SEK)")
             
