@@ -2,109 +2,118 @@ from datetime import datetime
 from Produkter import Produkt
 
 class KvittoRad:
-    def __init__(self, produkt_namn:str, count:int, per_pris:float, kampanj_datum:str, kampanj_pris:float):  # noqa: E501
+    def __init__(self, produkt_namn:str, count:int, per_pris:float, 
+                 kampanj_start_datum=None, kampanj_slut_datum=None, kampanj_pris=None):
         self.__produkt_namn = produkt_namn
         self.__count = count
         self.__per_pris = per_pris
-        self.__kampanj_datum = kampanj_datum
+        self.__kampanj_start_datum = kampanj_start_datum
+        self.__kampanj_slut_datum = kampanj_slut_datum
         self.__kampanj_pris = kampanj_pris
-    def Add_count(self,count):
+    def add_count(self,count):
          self.__count = self.__count + count
-    def Get_Total(self):
+    @property
+    def total(self):
         return self.__count * self.__per_pris
-    def Get_Name(self):
+    @property
+    def produkt_namn(self):
         return self.__produkt_namn
-    def Get_Count(self):
+    @property
+    def count(self):
         return self.__count
-    def Get_Per_Pris(self):
+    @property
+    def per_pris(self):
         return self.__per_pris
-    def Get_Kampanj_datum(self):
-        return self.__kampanj_datum
-    def Get_Kampanj_Pris(self):
-        return self.__kampanj_pris
-    def Get_Total_kampanj(self):
-        return self.__count * self.__kampanj_pris
-    def set_pris(self, new_price):
-        self.__per_pris = new_price
+    @per_pris.setter
+    def per_pris(self, nytt_pris):
+        self.__per_pris = nytt_pris
+    @property
+    def kampanj_pris(self):
+        if self.__kampanj_pris is not None and self.kampanj_är_aktiv:
+            return self.__kampanj_pris
+        return None
+    @property
+    def kampanj_är_aktiv(self):
+        if self.__kampanj_start_datum and self.__kampanj_slut_datum:
+            nuvarande_datum = datetime.now().date()
+            kampanj_start_datum = self.__kampanj_start_datum.date()
+            kampanj_slut_datum = self.__kampanj_slut_datum.date()
+            return kampanj_start_datum <= nuvarande_datum <= kampanj_slut_datum
+        return False
 
 class Kvitto:
     def __init__(self) -> None:
-        self.__datum = datetime.now().date()
+        self.__datum = datetime.now()
         self.__kvitto_rad = []
         self.__nuvarande_kvitto_nummer = 0
-    def Get_kvitto_nummer(self):
+    @property
+    def kvitto_nummer(self):
         return self.__nuvarande_kvitto_nummer
-    def set_kvitto_nummer(self, nummer):
+    @kvitto_nummer.setter
+    def kvitto_nummer(self, nummer):
         self.__nuvarande_kvitto_nummer = nummer
-    def Generera_kvitto(self):
-        datum_nu = self.__datum
-        datum_nu = datum_nu.strftime("%Y%m%d")
-        self.__nuvarande_kvitto_nummer += 1
-        kvitto_text = f"\nKvitto Nummer: {self.__nuvarande_kvitto_nummer}\n"
+    @property
+    def datum(self):
+        return self.__datum
+    
+    def resetta_kvitto(self):
+        self.__kvitto_rad = []
+
+    def generera_kvitto(self):
+        datum_nu = self.datum.strftime("%Y-%m-%d")
+        self.kvitto_nummer = self.kvitto_nummer
+        kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_nu}\n"
         for item in self.__kvitto_rad:
-            kvitto_text += f"{item.Get_Name()}: {item.Get_Count()} x {item.Get_Per_Pris()} = {item.Get_Total()}\n"
+            kvitto_text += f"{item.produkt_namn}: {item.count} x {'(Kampanjpris)' if item.kampanj_är_aktiv else ''}: {item.per_pris} SEK = {item.total:.2f}\n"
         kvitto_text += "\n" + "*" * 40 + "\n"
         with open(f"RECEIPT_{datum_nu}.txt", "a") as kvitto_fil:
             kvitto_fil.write(kvitto_text)
-        return self.__nuvarande_kvitto_nummer
+        return self.kvitto_nummer
 
-    def Total_Summa(self):
-        total = 0
-        for row in self.__kvitto_rad:
-            total = total + row.Get_Total()
-        return total
-    def Get_Datum(self):
-        return self.__datum
+    def total_summa(self):
+        return sum(item.total for item in self.__kvitto_rad)
     
-    def Lägg_Till(self, produkt_namn:str, count:int, per_pris:float, kampanj_datum:str, kampanj_pris:float):
-        kvitto_rad = KvittoRad(produkt_namn, count, per_pris , kampanj_datum, kampanj_pris)
-        for prdukt in self.__kvitto_rad:
-            if prdukt.Get_Name() == kvitto_rad.Get_Name():
-                prdukt.Add_count(count)
+    def lägg_Till(self, produkt_namn:str, count:int, per_pris:float, 
+                  kampanj_start_datum=None, kampanj_slut_datum=None, kampanj_pris=None):
+        kvitto_rad = KvittoRad(produkt_namn, count, per_pris , kampanj_start_datum, kampanj_slut_datum, kampanj_pris)
+        for produkt in self.__kvitto_rad:
+            if produkt.produkt_namn == kvitto_rad.produkt_namn:
+                produkt.add_count(count)
                 return
-        if kampanj_datum and "," in kampanj_datum:
-            parts = kampanj_datum.split(",")
-            print(parts)
-            start = datetime.strptime(parts[0],"%Y-%m-%d").date()
-            end = datetime.strptime(parts[1],"%Y-%m-%d").date()
-            current_date = datetime.now().date()
-            print("Lägger till kampanjpris")
-            if start <= current_date <= end:
-                kvitto_rad.set_pris(kampanj_pris)
+        print(f"Lägger till: {produkt_namn} x {count} {'(Kampanjpris)' if kvitto_rad.kampanj_är_aktiv else ''}: {per_pris} SEK")
         self.__kvitto_rad.append(kvitto_rad)
-
-    def Get_Kvittorad(self):
-        return self.__kvitto_rad
-    def Kolla_Kampanj_Inom_Datum(self, getDatum1, getDatum2):
-        start = datetime.strptime(getDatum1,"%Y-%m-%d").date()
-        end = datetime.strptime(getDatum2,"%Y-%m-%d").date()
-        currentDatum = datetime.now().date()
-        if start <= currentDatum <= end:
-            return True
-        return False
-    def Sök_kvitto(self, sök_kriterie):
+    
+    def sök_kvitto(self, sök_kriterie):
+        datum_nu = self.datum.strftime("%Y-%m-%d")
+        matchande_kvitton = []
         try:
-            with open("AllaKvitton.txt", "r") as kvitto_fil:
+            with open(f"RECEIPT_{datum_nu}.txt", "r") as kvitto_fil:
                 alla_kvitton = kvitto_fil.read()
             kvitton = alla_kvitton.split("\n" + "*" * 40 + "\n")
-            matchande_kvitton = []
             for kvitto in kvitton:
                 if sök_kriterie in kvitto:
                     matchande_kvitton.append(kvitto)
-            return matchande_kvitton
         except FileNotFoundError:
             print("Error: Inga kvitton hittades.")
-    def Skriv_kvitto(self):
-        print(f"Kvitto {self.Get_Datum()}")
+        return matchande_kvitton
+    
+    def skriv_kvitto(self):
+        print(f"Kvitto {self.datum.date()}")
         for rad in self.__kvitto_rad:
-            produkt_namn = rad.Get_Name()
-            count = rad.Get_Count()
-            per_pris = rad.Get_Per_Pris()
-            kampanj_datum = rad.Get_Kampanj_datum()
-            if kampanj_datum is not None:
-                print(f"{produkt_namn} x {count} (Kampanjpris: {per_pris} SEK)")
-            else:
-                print(f"{produkt_namn} x {count} (Pris: {per_pris} SEK)")
-            
-        total_summa = self.Total_Summa()
-        print(f"Total summa: {total_summa} SEK")
+            print(f"{rad.produkt_namn} x {rad.count} {'(Kampanjpris)' if rad.kampanj_är_aktiv else ''}: {rad.per_pris} SEK")
+        print(f"Total summa: {self.total_summa():.2f} SEK")
+
+    def öppna_kvitto_nummer(self):
+        try:
+            datum_nu = self.datum.strftime("%Y-%m-%d")
+            max_kvitto_nummer = 0
+            with open(f"RECEIPT_{datum_nu}.txt", "r") as f:
+                for line in f:
+                    if line.startswith("Kvitto:"):
+                        kvitto_nummer = int(line.split()[1])
+                        max_kvitto_nummer = max(max_kvitto_nummer, kvitto_nummer)
+            print(max_kvitto_nummer)
+            self.kvitto_nummer = max_kvitto_nummer
+            print(self.kvitto_nummer)
+        except FileNotFoundError:
+            print("Filen hittades inte. Börjar med kvitto nummer som 0")
