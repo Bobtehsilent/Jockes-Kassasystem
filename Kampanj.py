@@ -31,7 +31,7 @@ class Kampanj:
 
     @kampanj_pris.setter
     def kampanj_pris(self, nytt_kampanj_pris):
-        if isinstance(nytt_kampanj_pris, (int,float)) or nytt_kampanj_pris <= 0:
+        if not isinstance(nytt_kampanj_pris, (int,float)) or nytt_kampanj_pris <= 0:
             raise ValueError("Kampanjpris måste vara ett positivt tal")
         self.__kampanj_pris = nytt_kampanj_pris
 
@@ -62,7 +62,7 @@ class Kampanj:
                 #print("Attempting to parse string to datetime.")
                 return datetime.strptime(datumstr, format)
             except ValueError:
-                print("Failed to parse string, invalid format.")
+                print("Gick inte att analysera strängen. ogiltigt format.")
                 return None
         else:
             print("Received an unexpected type, raising ValueError.")

@@ -2,27 +2,40 @@
     "produkter": [
         {
             "produkt_id": "301",
-            "produkt_namn": "bananer",
+            "produkt_namn": "banan",
             "produkt_pris": 24.95
         },
         {
-            "produkt_id": "300",
+            "produkt_id": "302",
             "produkt_namn": "\u00e4pple",
-            "produkt_pris": 50.0
-        },
-        {
-            "produkt_id": "500",
-            "produkt_namn": "br\u00f6d",
-            "produkt_pris": 39.95
+            "produkt_pris": 29.95
         }
     ],
-    "kampanjer": [
-        {
-            "kampanj_namn": "billiga bananer",
-            "produkt_id": "301",
-            "kampanj_pris": 10.0,
-            "kampanj_start_datum": "2023-10-10",
-            "kampanj_slut_datum": "2023-10-20"
+    "kampanjer": {
+        "301": {
+            "nya bananer": {
+                "kampanj_namn": "nya bananer",
+                "produkt_id": "301",
+                "kampanj_pris": 15.0,
+                "kampanj_start_datum": "2023-10-15",
+                "kampanj_slut_datum": "2023-10-18"
+            },
+            "andra bananer": {
+                "kampanj_namn": "andra bananer",
+                "produkt_id": "301",
+                "kampanj_pris": 2.0,
+                "kampanj_start_datum": "2023-10-10",
+                "kampanj_slut_datum": "2023-10-15"
+            }
+        },
+        "302": {
+            "billiga \u00e4pplen": {
+                "kampanj_namn": "billiga \u00e4pplen",
+                "produkt_id": "302",
+                "kampanj_pris": 10.0,
+                "kampanj_start_datum": "2023-10-20",
+                "kampanj_slut_datum": "2023-10-25"
+            }
         }
-    ]
+    }
 }
