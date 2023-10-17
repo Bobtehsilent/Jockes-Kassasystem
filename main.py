@@ -3,12 +3,50 @@ import json
 import os
 from Lager import Lager
 from Kvitton import Kvitto
-
-
+class ExitSubmenuException(Exception):
+    pass
 class Administrera:
+    MENYER = {
+        'main': [
+            'Nytt kvitto',
+            "Administration",
+            "Avsluta"
+],
+        'admin': [
+            'Sök kvitto',
+            'Produktmeny',
+            'Kampanjmeny',
+            'Stäng ner Administration'
+        ],
+        'produkt': [
+            'Lägg till produkt',
+            'Ta bort produkt',
+            'Visa lager',
+            'Uppdatera existerande produkt',
+            'Gå tillbaka'
+        ],
+        'kampanj': [
+            'Lägg till kampanj',
+            'Ta bort kampanj',
+            'Uppdatera existerande kampanj',
+            'Visa kampanj lager',
+            'Gå tillbaka'
+        ],
+        'kvitto':[
+            'Kvittot har dagens datum',
+            'Välj ett datum att söka efter',
+            'Gå tillbaka'
+        ],
+        'uppdatera': [
+            'Uppdatera pris',
+            'Uppdatera namn'
+        ]
+        
+    }
     def __init__(self,lager,kvitto):
         self.lager = lager
         self.kvitto = kvitto
+
     def val_hantering(self, prompt,min_värde, max_värde):
         while True:
             try:
@@ -21,137 +59,157 @@ class Administrera:
                 print(f"Error: Mata in ett tal mellan {min_värde} och {max_värde}")
                 continue
         return val
-    def print_admin_meny(self):
-        print("1. Sök kvitto\n2. Produktmeny\n3. Kampanjmeny\n4. Stäng ner Administration")
-        val_för_admin_menyn = self.val_hantering((":"), min_värde=1, max_värde=4)
-        return val_för_admin_menyn
     
-    def print_produkt_meny(self):
-        print("1. Lägg till produkt\n2. Ta bort produkt\n3. Visa lager\n4. Uppdatera existerande produkt\n5. Tillbaka till Administraion")
-        val_för_produkt_meny = self.val_hantering((":"), min_värde=1, max_värde=5)
-        return val_för_produkt_meny
-    def print_kampanj_meny(self):
-        print("1. Lägg till kampanj\n2. Ta bort kampanj\n3. Uppdatera existerande kampanj\n4. Visa lager\n5. Tillbaka till Administraion")
-        val_för_kampanj_meny = self.val_hantering((":"), min_värde=1, max_värde=5)
-        return val_för_kampanj_meny
-
-
-    def admin_meny_val(self):
+    def gå_tillbaka_subval(self, värde):
+        if värde == 0 or värde == '0':
+            raise ExitSubmenuException()
+    
+    def print_meny(self, meny_namn):
+        for idx, val in enumerate(self.MENYER[meny_namn]):
+            if idx == len(self.MENYER[meny_namn]) -1:
+                print(f"0. {val}")
+            else:
+                print(f"{idx + 1}. {val}")
+        max_val = len(self.MENYER[meny_namn]) - 1
+        return self.val_hantering(":", min_värde=0, max_värde=max_val)
+    
+    def sök_kvitto_meny(self):
         while True:
-            val_för_admin_menyn = self.print_admin_meny()
-            if val_för_admin_menyn == 1:
-                while True:
-                    print("1. Kvittot har dagens datum\n2. Välj ett datum att söka efter\n3. Gå tillbaka")
-                    val_för_sök_kvitto = self.val_hantering((":"), min_värde=1,max_värde=3)
-                    if val_för_sök_kvitto == 1:
-                        sök_kriterie = datetime.now().strftime("%Y-%m-%d")
-                        break
-                    elif val_för_sök_kvitto == 2:
-                        sök_kriterie = input("Ange datum (YYYY-MM-DD): ")
-                        break
-                    elif val_för_sök_kvitto == 3:
-                        break
-                matchande_kvitton = self.kvitto.sök_kvitto(sök_kriterie)
-                if matchande_kvitton:
-                    for matchande_kvitto in matchande_kvitton:
-                        print(matchande_kvitto)
-                else:
-                    print("Fanns inga kvitton för angivna datumet.")
-            if val_för_admin_menyn == 2:
-                self.produkt_meny()
-            if val_för_admin_menyn == 3:
-                self.kampanj_meny()
-            if val_för_admin_menyn == 4:
-                break
+            val_för_sök_kvitto = self.print_meny('kvitto')
+            if val_för_sök_kvitto == 1:
+                sök_kriterie = datetime.now().strftime("%Y-%m-%d")
+            elif val_för_sök_kvitto == 2:
+                sök_kriterie = input("Ange datum (YYYY-MM-DD): ")
+            elif val_för_sök_kvitto == 0:
+                return
+            matchande_kvitton = self.kvitto._sök_kvitto(sök_kriterie)
+            if matchande_kvitton:
+                for matchande_kvitto in matchande_kvitton:
+                    print(matchande_kvitto)
+            else:
+                print("Fanns inga kvitton för angivna datumet.")
+                
     def produkt_meny(self):
         while True:
-            val_för_produkt_meny = self.print_produkt_meny()
-            if val_för_produkt_meny == 1:
-                produkt_id = input("Välj id för produkten: ")
-                produkt_namn = input("Välj ett namn för produkten: ")
-                try:
-                    produkt_pris = float(input("Välj ett pris på varan: "))
-                except ValueError:
-                    print("Error: Välj ett positivt pris tack")
-                    continue
-                self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris)
-                print(f"Produkten {produkt_namn} har lagts till med id {produkt_id}")
-            elif val_för_produkt_meny == 2:
-                produkt_id = input("Vad är ID på produkten du vill ta bort?: ")
-                self.lager.ta_bort_produkt(produkt_id)
-            elif val_för_produkt_meny == 3:
-                print(self.lager.visa_produkt_lager())
-            elif val_för_produkt_meny == 4:
-                print("1.Uppdatera Namn\n2.Uppdatera Pris")
-                val_uppdatera = self.val_hantering(":", min_värde=1,max_värde=2)
-                if val_uppdatera == 1:
-                    produkt_id = input("Ange produktid för varan du vill uppdatera: ")
-                    nytt_namn = input("Ange nytt namn för varan: ")
-                    self.lager.uppdatera_produkt(produkt_id,'name', nytt_namn)
-                elif val_uppdatera == 2:
-                    produkt_id = input("Ange produktid för varan du vill uppdatera: ")
-                    try:
-                        nytt_pris = int(input("Ange nytt pris för varan (Positivt heltal): "))
-                    except ValueError:
-                        print("Error: Ange ett positivt heltal.")
-                    self.lager.uppdatera_produkt(produkt_id,'pris', nytt_pris)
-            elif val_för_produkt_meny == 5:
-                self.lager.spara_filer()
+            meny_val = self.print_meny('produkt')
+            if meny_val == 1:
+                self.lägg_till_vara()
+            elif meny_val == 2:
+                self.ta_bort_vara()
+            elif meny_val == 3:
+                self.visa_varulager()
+            elif meny_val == 4:
+                self.uppdatera_vara()
+            elif meny_val == 0:
                 break
+
+    def lägg_till_vara(self):
+        try:
+            produkt_id = input("Välj id för produkten: ")
+            self.gå_tillbaka_subval(produkt_id)
+            produkt_namn = input("Välj ett namn för produkten: ")
+            self.gå_tillbaka_subval(produkt_namn)
+            produkt_pris = float(input("Välj ett pris på varan: "))
+            self.gå_tillbaka_subval(produkt_pris)
+            self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris)
+            print(f"Produkten {produkt_namn} har lagts till med id {produkt_id}")
+        except ExitSubmenuException:
+            return
+        except ValueError:
+            print("Error: Välj ett positivt pris tack")
+
+    def ta_bort_vara(self):
+        produkt_id = input("Vad är ID på produkten du vill ta bort?: ")
+        self.gå_tillbaka_subval(produkt_id)
+        self.lager.ta_bort_produkt(produkt_id)
+
+    def visa_varulager(self):
+        print(self.lager.visa_produkt_lager())
+
+    def uppdatera_vara(self):
+        try:
+            val_uppdatera = self.print_meny('uppdatera')
+            if val_uppdatera == 1:
+                produkt_id = input("Ange produktid för varan du vill uppdatera: ")
+                self.gå_tillbaka_subval(produkt_id)
+                nytt_namn = input("Ange nytt namn för varan: ")
+                self.gå_tillbaka_subval(nytt_namn)
+                self.lager.uppdatera_produkt(produkt_id,'name', nytt_namn)
+            elif val_uppdatera == 2:
+                produkt_id = input("Ange produktid för varan du vill uppdatera: ")
+                self.gå_tillbaka_subval(produkt_id)
+                nytt_pris = int(input("Ange nytt pris för varan: "))
+                self.gå_tillbaka_subval(nytt_pris)
+                self.lager.uppdatera_produkt(produkt_id,'pris', nytt_pris)
+        except ValueError:
+            print("Error: Ange ett positivt heltal.")
+    
     def kampanj_meny(self):
         while True:
-            val_för_kampanj_meny = self.print_kampanj_meny()
-            if val_för_kampanj_meny == 1:
-                produkt = input("Skriv produktid på produkten du vill ha på kampanj(Q för att gå tillbaka)\n: ")
-                if produkt.lower() == "q":
-                    continue
-                else:
-                    hitta_produkt = self.lager.sök_efter_produkt(produkt)
-                    if not hitta_produkt:
-                        print("Produkten finns inte, försök igen")
-                        continue
-                    kampanj_namn = input("Vad ska kampanjen heta?: ")
-                    try:
-                        kampanj_pris = float(input("Mata in nya kampanj priset: "))
-                        kampanj_start_datum, kampanj_slut_datum = self.lager.skapa_kampanj_datum()
-                    except ValueError:
-                        print("Felaktig pris. Vänligen mata in ett numeriskt värde")
-                    self.lager.lägg_till_kampanj(produkt, kampanj_namn, kampanj_pris, kampanj_start_datum, kampanj_slut_datum)
-            elif val_för_kampanj_meny == 2:
-                self.lager.visa_kampanj_lager()
-                produkt_id = input("Ange produktid för produkten vars kampanj du vill ta bor: ")
-                kampanj_namn = input("Ange namn på kampanjen du vill ta bort: ")
-                self.lager.ta_bort_kampanj(produkt_id, kampanj_namn)
-            elif val_för_kampanj_meny == 3:
-                produkt_id = input("Ange produktid för att se vilka kampanjer produkten har: ")
-                kampanjer = self.lager.visa_kampanjer_för_produkt(produkt_id)
-                if kampanjer:
-                    try:
-                        val_kampanj = int(input("Ange numret på kampanjen du vill uppdatera: "))
-                        if 1 <= val_kampanj <= len(kampanjer):
-                            kampanj_namn = kampanjer[val_kampanj-1]
-                            try:
-                                nytt_pris = float(input("Ange det nya kampanjpriset: "))
-                                if nytt_pris <= 0:
-                                    print("Error: Ange ett positivt tal")
-                                else:
-                                    self.lager.uppdatera_kampanj(produkt_id, kampanj_namn, nytt_pris)
-                            except ValueError:
-                                print("Error: Ange ett positivt tal")
-                        else:
-                            print(f"Error: Ange ett nummer mellan 1 och {len(kampanjer)}.")
-                    except ValueError:
-                        print("Error: Ange ett heltal.")
-                else:
-                    print("Ingen kampanj att uppdatera")
-            elif val_för_kampanj_meny == 4:
+            meny_val = self.print_meny('kampanj')
+            if meny_val == 1:
+                self.ny_kampanj()
+            elif meny_val == 2:
+                self.ta_bort_kampanj()
+            elif meny_val == 3:
+                self.uppdatera_kampanj()
+            elif meny_val == 4:
                 print(self.lager.visa_kampanj_lager())
-                continue
-            elif val_för_kampanj_meny == 5:
+            elif meny_val == 0:
                 break
+
+    def ny_kampanj(self):
+        produkt = input("Skriv produktid för produkten du "
+                                "ha på kampanj\n: ")
+        if produkt == '0':
+            return
+        produkt = self.lager.sök_efter_produkt(produkt)
+        if not produkt:
+            print("Produkten finns inte, försök igen")
+            return
+        kampanj_namn = input("Vad ska kampanjen heta: ")
+        try:
+            kampanj_pris = float(input("Mata in nya kampanj priset: "))
+            kampanj_start_datum, kampanj_slut_datum = \
+                self.lager.skapa_kampanj_datum()
+        except ValueError:
+            print("Felaktig pris. Vänligen mata in ett numeriskt värde")
+        self.lager.lägg_till_kampanj(produkt.produkt_id, kampanj_namn, kampanj_pris,\
+                                     kampanj_start_datum, kampanj_slut_datum)
+        
+    def ta_bort_kampanj(self):
+        self.lager.visa_kampanj_lager()
+        produkt_id = input("Ange produktid för produkten vars " 
+                        "kampanj du vill ta bort: ")
+        kampanj_namn = input("Ange namn på kampanjen du vill ta bort: ").lower()
+        if kampanj_namn == '0' or produkt_id == '0':
+            return
+        self.lager.ta_bort_kampanj(produkt_id, kampanj_namn)
+
+    def uppdatera_kampanj(self):
+        produkt_id = input("Ange produktid för att "
+                             "se vilka kampanjer produkten har: ")
+        kampanjer = self.lager.visa_kampanjer_för_produkt(produkt_id)
+        if not kampanjer:
+            print("Ingen kampanj att uppdatera")
+            return
+        try:
+            val_kampanj = int(input("Ange numret på kampanjen"
+                                        " du vill uppdatera: "))
+            assert 1 <= val_kampanj <= len(kampanjer)
+
+            kampanj_namn = kampanjer[val_kampanj-1]
+            nytt_pris = float(input("Ange det nya kampanjpriset: "))
+            assert nytt_pris > 0
+            self.lager.uppdatera_kampanj(produkt_id, kampanj_namn, nytt_pris)
+        except ValueError:
+            print("Error: Ange ett positivt tal.")
+        except AssertionError:
+            print(f"Error: Ange ett nummer mellan 1 och {len(kampanjer)}.")
+
     def dela_kommandon(self):
         while True:
-            kassa_input = input("Kommando: ")
+            kassa_input = input(": ")
             delar = kassa_input.split(' ')
             if len(delar) == 2:
                 return delar[0], delar[1]
@@ -164,54 +222,58 @@ class Administrera:
         print("Kassa 1")
         self.kvitto.kvitto_nummer += 1
         while True:
-            print("Kommandon: <produktid> <Space> <antal> | PAY | Q (tillbaka)")
+            print("Kommandon: <produktid> <Space> <antal> | PAY")
             delar = self.dela_kommandon()
             if not delar:
                 print("Ogiltigt kommando. Försök igen")
                 continue
-            elif delar[0].lower() == 'q':
+            elif delar[0] == '0':
                 break
             elif delar[0].lower() == 'pay':
-                kvitto_nummer = self.kvitto.generera_kvitto()
+                self.kvitto.generera_kvitto()
                 self.kvitto.skriv_kvitto()
-                print(f"Kvitto {kvitto_nummer} har genererats.")
                 self.kvitto.resetta_kvitto()
                 break
             else:
                 produkt_id = delar[0]
                 antal = delar[1]
                 try:
-                    namn, belopp, kampanj_start_datum, kampanj_slut_datum = self.lager.hämta_produkt_info(produkt_id)
+                    namn, belopp, kampanj_start_datum, kampanj_slut_datum = \
+                        self.lager.hämta_produkt_info(produkt_id)
                 except IndexError:
                     print("Error: produkt informationen är ej komplett")
                 except Exception as e:
                     print(f"Error: {e}")
                     continue
                 try:
-                    self.kvitto.lägg_till(namn, int(antal), float(belopp), kampanj_start_datum, kampanj_slut_datum)
+                    self.kvitto.lägg_till(namn, int(antal), float(belopp), 
+                                          kampanj_start_datum, kampanj_slut_datum)
                 except ValueError:
                     print("Mata in enligt formatet <Produktid> <Antal> eller PAY")
-                self.kvitto.skriv_kvitto()
 
-    def print_main_meny(self):
-        print("1. Ny kund")
-        print("2. Administration")
-        print("0. Avsluta")
-        val_huvud_meny = self.val_hantering((":"), min_värde=0, max_värde=2)
-        return val_huvud_meny
+    def admin_meny_val(self):
+        while True:
+            meny_val = self.print_meny('admin')
+            if meny_val == 1:
+                self.sök_kvitto_meny()
+            if meny_val == 2:
+                self.produkt_meny()
+            if meny_val == 3:
+                self.kampanj_meny()
+            if meny_val == 0:
+                break
     
     def main(self):
         while True:
-            val_main = self.print_main_meny()
+            val_main = self.print_meny('main')
             if val_main == 0:
                 self.lager.spara_filer()
                 break
             elif val_main == 1:
                 self.nytt_kvitto()
-                print(self.kvitto.kvitto_nummer)
             elif val_main == 2:
                 self.admin_meny_val()
-
+@staticmethod
 def uppstart():
     kvitto = Kvitto()
     lager = Lager()
@@ -221,9 +283,6 @@ def uppstart():
             json.dump(default_data, f)
     lager.öppna_filer()
     kvitto.öppna_kvitto_nummer()
-    print(lager.produkter)
-    print(lager.kampanjer)
-
     admin_meny = Administrera(lager, kvitto)
     admin_meny.main()
 

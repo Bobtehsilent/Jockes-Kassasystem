@@ -1,7 +1,7 @@
 class Produkt:
-    def __init__(self, produkt_id:str,produkt_namn:str, produkt_pris:float) -> None:  # noqa: E501
+    def __init__(self, produkt_id:str,produkt_namn:str, produkt_pris:float):
         self.__produkt_id = produkt_id
-        self.__produkt_pris = float(produkt_pris)
+        self.__produkt_pris = produkt_pris
         self.__produkt_namn = produkt_namn
         
         if self.__produkt_pris < 0:
@@ -41,7 +41,5 @@ class Produkt:
             'produkt_pris':self.produkt_pris,
         }
     def __str__(self) -> str:
-        return f"Produkt id: {self.produkt_id} | Produkt namn: {self.produkt_namn} | Produkt Pris: {self.produkt_pris} SEK"
-
-
-
+        return (f"Produkt id: {self.produkt_id} | Produkt namn: {self.produkt_namn} "
+            f"| Produkt Pris: {self.produkt_pris} SEK")
