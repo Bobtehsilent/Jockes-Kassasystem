@@ -29,7 +29,8 @@ class Produkt:
 
     def till_dict(self):
         """
-        Skapar en dictionary formattering av produkt objekten.
+        Skapar en dictionary formattering av produkt objekten
+        för att spara till en .json
 
         Returns:
             dict: en dictionary med nycklarna 'produkt_id', 'produkt_namn' 

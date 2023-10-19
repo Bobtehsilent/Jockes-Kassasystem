@@ -102,7 +102,7 @@ class Kvitto:
         return matchande_kvitton
     
     def generera_kvitto(self):
-        datum_nu = self.datum.strftime("%Y-%m-%d")
+        datum_nu = self.datum.strftime("%Y%m%d")
         kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_nu}\n"
         for item in self.kvitto_rad:
             kvitto_text += f"{item.produkt_namn}: {item.count} x "
@@ -125,7 +125,7 @@ class Kvitto:
 
     def öppna_kvitto_nummer(self):
         try:
-            datum_nu = self.datum.strftime("%Y-%m-%d")
+            datum_nu = self.datum.strftime("%Y%m%d")
             max_kvitto_nummer = 0
             with open(f"RECEIPT_{datum_nu}.txt", "r") as f:
                 for line in f:
@@ -134,4 +134,4 @@ class Kvitto:
                         max_kvitto_nummer = max(max_kvitto_nummer, kvitto_nummer)
             self.kvitto_nummer = max_kvitto_nummer
         except FileNotFoundError:
-            print("Filen hittades inte. Börjar med kvitto nummer som 0")
+            print(f"Ingen aktuell kvittofil. Öppnar en ny för: {datum_nu}")

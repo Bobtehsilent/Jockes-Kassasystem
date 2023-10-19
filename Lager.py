@@ -68,7 +68,6 @@ class Lager:
         else:
             raise Exception("Produkten finns inte")
 
-
     def lägg_till_kampanj(self,produkt_id, kampanj_namn, kampanj_pris, 
                           kampanj_start_datum, kampanj_slut_datum):
         if produkt_id in self.produkter:
@@ -149,9 +148,9 @@ class Lager:
                 if produkt_id in self.kampanjer:
                     antal_kampanjer = len(self.kampanjer[produkt_id])
                     lager_str += f" ({antal_kampanjer} " \
-                    f"kampanj{'er' if antal_kampanjer >1 else''}tillgänglig"\
-                    f"{'a' if antal_kampanjer > 1 else ''})"
-                    lager_str += "\n"
+                        f"kampanj{'er' if antal_kampanjer >1 else''} "\
+                            f"tillgänglig{'a'  if antal_kampanjer > 1 else ''})"
+                lager_str += "\n"
         except Exception as e:
             lager_str += f"Error med produkt: {e}" + "\n"
         return lager_str

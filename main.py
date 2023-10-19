@@ -3,6 +3,7 @@ import json
 import os
 from Lager import Lager
 from Kvitton import Kvitto
+
 class ExitSubmenuException(Exception):
     pass
 class Administrera:
@@ -41,25 +42,73 @@ class Administrera:
             'Uppdatera pris',
             'Uppdatera namn'
         ]
-        
     }
+    
     def __init__(self,lager,kvitto):
         self.lager = lager
         self.kvitto = kvitto
+        self.FUNKTION_HANTERARE = {
+            'main': {
+            1: self.nytt_kvitto,
+            2: self.admin_meny_val
+        },
+            'produkt': {
+            1: self.lägg_till_vara,
+            2: self.ta_bort_vara,
+            3: self.visa_varulager,
+            4: self.uppdatera_vara,
+        },
+            'kampanj': {
+            1: self.ny_kampanj,
+            2: self.ta_bort_kampanj,
+            3: self.uppdatera_kampanj,
+            4: self.visa_kampanj_lager,
+        },
+            'admin': {
+            1: self.sök_kvitto_meny,
+            2: self.produkt_meny,
+            3: self.kampanj_meny
+        },
+            'kvitto': {
+                
+            }
+    }
 
-    def val_hantering(self, prompt,min_värde, max_värde):
+    def universal_input_hantering(self, prompt, input_type=int, 
+                                  min_värde=None, max_värde=None, stäng_på_0=True):
         while True:
+            val = input(prompt)
+            if stäng_på_0 and (val == '0' or val == 0):
+                raise ExitSubmenuException()
             try:
-                val = int(input(prompt))
-                if val < min_värde or val > max_värde:
-                    print(f"Mata in ett tal mellan {min_värde} och {max_värde} tack")
-                else:
-                    break
+                if input_type == int:
+                    val = int(val)
+                    if min_värde is not None and max_värde is not None:
+                        if val < min_värde or val > max_värde:
+                            print(f"Mata in ett tal mellan {min_värde} "
+                                  f"och {max_värde} tack")
+                            continue
+                elif input_type == float:
+                    val == float(val)
+                return val
             except ValueError:
-                print(f"Error: Mata in ett tal mellan {min_värde} och {max_värde}")
-                continue
-        return val
-    
+                print("Error: Felaktig input format")
+
+    def submeny_hanterare(self, menu_name):
+        try:
+            while True:
+                val = self.print_meny(menu_name)
+                if val == 0 and menu_name == 'main':
+                    self.lager.spara_filer()
+                    exit()
+                elif val == 0:
+                    break
+                function_to_execute = self.FUNKTION_HANTERARE[menu_name].get(val)
+                if function_to_execute:
+                    function_to_execute()
+        except ExitSubmenuException:
+            return
+
     def gå_tillbaka_subval(self, värde):
         if värde == 0 or värde == '0':
             raise ExitSubmenuException()
@@ -71,13 +120,17 @@ class Administrera:
             else:
                 print(f"{idx + 1}. {val}")
         max_val = len(self.MENYER[meny_namn]) - 1
-        return self.val_hantering(":", min_värde=0, max_värde=max_val)
+        if meny_namn == 'main':
+            return self.universal_input_hantering(":", min_värde=0, max_värde=max_val, 
+                                                  stäng_på_0=False)
+        else:
+            return self.universal_input_hantering(":", min_värde=0, max_värde=max_val)
     
     def sök_kvitto_meny(self):
         while True:
             val_för_sök_kvitto = self.print_meny('kvitto')
             if val_för_sök_kvitto == 1:
-                sök_kriterie = datetime.now().strftime("%Y-%m-%d")
+                sök_kriterie = datetime.now().strftime("%Y%m%d")
             elif val_för_sök_kvitto == 2:
                 sök_kriterie = input("Ange datum (YYYY-MM-DD): ")
             elif val_för_sök_kvitto == 0:
@@ -90,27 +143,13 @@ class Administrera:
                 print("Fanns inga kvitton för angivna datumet.")
                 
     def produkt_meny(self):
-        while True:
-            meny_val = self.print_meny('produkt')
-            if meny_val == 1:
-                self.lägg_till_vara()
-            elif meny_val == 2:
-                self.ta_bort_vara()
-            elif meny_val == 3:
-                self.visa_varulager()
-            elif meny_val == 4:
-                self.uppdatera_vara()
-            elif meny_val == 0:
-                break
+        self.submeny_hanterare('produkt')
 
     def lägg_till_vara(self):
         try:
             produkt_id = input("Välj id för produkten: ")
-            self.gå_tillbaka_subval(produkt_id)
             produkt_namn = input("Välj ett namn för produkten: ")
-            self.gå_tillbaka_subval(produkt_namn)
             produkt_pris = float(input("Välj ett pris på varan: "))
-            self.gå_tillbaka_subval(produkt_pris)
             self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris)
             print(f"Produkten {produkt_namn} har lagts till med id {produkt_id}")
         except ExitSubmenuException:
@@ -120,7 +159,6 @@ class Administrera:
 
     def ta_bort_vara(self):
         produkt_id = input("Vad är ID på produkten du vill ta bort?: ")
-        self.gå_tillbaka_subval(produkt_id)
         self.lager.ta_bort_produkt(produkt_id)
 
     def visa_varulager(self):
@@ -131,32 +169,17 @@ class Administrera:
             val_uppdatera = self.print_meny('uppdatera')
             if val_uppdatera == 1:
                 produkt_id = input("Ange produktid för varan du vill uppdatera: ")
-                self.gå_tillbaka_subval(produkt_id)
                 nytt_namn = input("Ange nytt namn för varan: ")
-                self.gå_tillbaka_subval(nytt_namn)
                 self.lager.uppdatera_produkt(produkt_id,'name', nytt_namn)
             elif val_uppdatera == 2:
                 produkt_id = input("Ange produktid för varan du vill uppdatera: ")
-                self.gå_tillbaka_subval(produkt_id)
                 nytt_pris = int(input("Ange nytt pris för varan: "))
-                self.gå_tillbaka_subval(nytt_pris)
                 self.lager.uppdatera_produkt(produkt_id,'pris', nytt_pris)
         except ValueError:
             print("Error: Ange ett positivt heltal.")
     
     def kampanj_meny(self):
-        while True:
-            meny_val = self.print_meny('kampanj')
-            if meny_val == 1:
-                self.ny_kampanj()
-            elif meny_val == 2:
-                self.ta_bort_kampanj()
-            elif meny_val == 3:
-                self.uppdatera_kampanj()
-            elif meny_val == 4:
-                print(self.lager.visa_kampanj_lager())
-            elif meny_val == 0:
-                break
+        self.submeny_hanterare('kampanj')
 
     def ny_kampanj(self):
         produkt = input("Skriv produktid för produkten du "
@@ -206,6 +229,8 @@ class Administrera:
             print("Error: Ange ett positivt tal.")
         except AssertionError:
             print(f"Error: Ange ett nummer mellan 1 och {len(kampanjer)}.")
+    def visa_kampanj_lager(self):
+        print(self.lager.visa_kampanj_lager())
 
     def dela_kommandon(self):
         while True:
@@ -252,27 +277,11 @@ class Administrera:
                     print("Mata in enligt formatet <Produktid> <Antal> eller PAY")
 
     def admin_meny_val(self):
-        while True:
-            meny_val = self.print_meny('admin')
-            if meny_val == 1:
-                self.sök_kvitto_meny()
-            if meny_val == 2:
-                self.produkt_meny()
-            if meny_val == 3:
-                self.kampanj_meny()
-            if meny_val == 0:
-                break
+        self.submeny_hanterare('admin')
     
     def main(self):
-        while True:
-            val_main = self.print_meny('main')
-            if val_main == 0:
-                self.lager.spara_filer()
-                break
-            elif val_main == 1:
-                self.nytt_kvitto()
-            elif val_main == 2:
-                self.admin_meny_val()
+        self.submeny_hanterare('main')
+
 @staticmethod
 def uppstart():
     kvitto = Kvitto()
