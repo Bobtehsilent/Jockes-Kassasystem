@@ -61,7 +61,7 @@ class Kampanj:
             try:
                 return datetime.strptime(datumstr, format)
             except ValueError:
-                print("Gick inte att analysera strängen. ogiltigt format.")
+                print("Error: Ogiltigt format. Försök igen.")
                 return None
         else:
             print("Received an unexpected type, raising ValueError.")

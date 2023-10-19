@@ -1,0 +1,79 @@
+{
+    "MENYER": {
+        "main": [
+            "Nytt kvitto",
+            "Administration",
+            "Avsluta"
+        ],
+        "admin": [
+            "S\u00f6k kvitto",
+            "Produktmeny",
+            "Kampanjmeny",
+            "St\u00e4ng ner Administration"
+        ],
+        "produkt": [
+            "L\u00e4gg till produkt",
+            "Ta bort produkt",
+            "Visa lager",
+            "Uppdatera existerande produkt",
+            "St\u00e4ng ner produkthantering"
+        ],
+        "kampanj": [
+            "L\u00e4gg till kampanj",
+            "Ta bort kampanj",
+            "Uppdatera existerande kampanj",
+            "Visa kampanj lager",
+            "St\u00e4ng ner kampanjhantering"
+        ],
+        "kvitto": [
+            "Kvittot har dagens datum",
+            "V\u00e4lj ett datum att s\u00f6ka efter",
+            "Avbryt s\u00f6kning efter kvitto"
+        ],
+        "uppdatera_produkt": [
+            "Uppdatera namn",
+            "Uppdatera pris",
+            "Avbryt uppdatering"
+        ],
+        "uppdatera_kampanj": [
+            "Uppdatera namn",
+            "Uppdatera pris",
+            "Avbryt uppdatering"
+        ]
+    },
+    "FUNKTION_HANTERARE": {
+        "main": {
+            "1": "nytt_kvitto",
+            "2": "admin_meny_val"
+        },
+        "produkt": {
+            "1": "l\u00e4gg_till_vara",
+            "2": "ta_bort_vara",
+            "3": "visa_varulager",
+            "4": "uppdatera_vara"
+        },
+        "kampanj": {
+            "1": "ny_kampanj",
+            "2": "ta_bort_kampanj",
+            "3": "uppdatera_kampanj",
+            "4": "visa_kampanj_lager"
+        },
+        "admin": {
+            "1": "s\u00f6k_kvitto_meny",
+            "2": "produkt_meny",
+            "3": "kampanj_meny"
+        },
+        "uppdatera_produkt": {
+            "1": "uppdatera_produkt_namn",
+            "2": "uppdatera_produkt_pris"
+        },
+        "uppdatera_kampanj": {
+            "1": "uppdatera_kampanj_namn",
+            "2": "uppdatera_kampanj_pris"
+        },
+        "kvitto": {
+            "1": "s\u00f6k_dagens_kvitto",
+            "2": "s\u00f6k_datum_kvitto"
+        }
+    }
+}

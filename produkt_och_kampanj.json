@@ -25,10 +25,10 @@
                 "kampanj_start_datum": "2023-10-15",
                 "kampanj_slut_datum": "2023-10-18"
             },
-            "andra bananer": {
+            "gamla bananer": {
                 "kampanj_namn": "andra bananer",
                 "produkt_id": "301",
-                "kampanj_pris": 20.0,
+                "kampanj_pris": 24.0,
                 "kampanj_start_datum": "2023-10-10",
                 "kampanj_slut_datum": "2023-10-15"
             }

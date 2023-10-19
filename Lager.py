@@ -10,7 +10,7 @@ class Lager:
         self.produkter = {}
         self.kvitto = Kvitto()
 
-    def lägg_till_produkt(self,produkt_id, produkt_namn,produkt_pris):
+    def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris):
         produkt = Produkt(produkt_id, produkt_namn, produkt_pris)
         if produkt.produkt_id in self.produkter:
             print(f"Produkt med id {produkt.produkt_id} existerar redan")
@@ -114,15 +114,18 @@ class Lager:
             print(f"Inga kampanjer hittades för produkt {produkt_id}.")
         return kampanj_lista
                 
-    def uppdatera_kampanj(self, produkt_id, kampanj_namn, nytt_pris):
-        if produkt_id in self.kampanjer and kampanj_namn in self.kampanjer[produkt_id]:
-            kampanj = self.kampanjer[produkt_id][kampanj_namn]
+    def uppdatera_kampanj(self, produkt_id, kampanj_namn, 
+                          nytt_namn=None, nytt_pris=None):
+        kampanj = self.kampanjer[produkt_id][kampanj_namn]
+        if nytt_namn is not None and nytt_namn != kampanj_namn:
+            self.kampanjer[produkt_id][nytt_namn] = \
+                (self.kampanjer[produkt_id].pop(kampanj_namn))
+            print(f"Kampanjen '{kampanj_namn}' för produkten {produkt_id}" 
+              f" har uppdaterats med nytt namn: {nytt_namn}.")
+        if nytt_pris is not None:
             kampanj.kampanj_pris = nytt_pris
             print(f"Kampanjen '{kampanj_namn}' för produkten {produkt_id}" 
-                  f" har uppdaterats med nytt pris: {nytt_pris}")
-        else:
-            print(f"Kampanj med namnet {kampanj_namn} "
-                  f"för produkten {produkt_id} existerar inte.")
+              f" har uppdaterats med nytt pris: {nytt_pris} kr.")
 
     def ta_bort_kampanj(self, produkt_id, kampanj_namn):
         try:
@@ -171,9 +174,41 @@ class Lager:
                 lager_str += "\n"
         except Exception as e:
             lager_str += f"Error med kampanj: {e}\n" 
-        return lager_str   
+        return lager_str  
 
-    def spara_filer(self):
+    def ladda_meny_och_funktion_hanterare(self, admin):
+        with open('menyer_och_funktioner.json') as f:
+            data = json.load(f)
+        admin.MENYER = data['MENYER']
+        funktion_namn_till_metod = {
+            "nytt_kvitto":admin.nytt_kvitto,
+            "admin_meny_val":admin.admin_meny_val,
+            "lägg_till_vara":admin.lägg_till_vara,
+            "ta_bort_vara":admin.ta_bort_vara,
+            "visa_varulager":admin.visa_varulager,
+            "uppdatera_vara":admin.uppdatera_vara,
+            "ny_kampanj":admin.ny_kampanj,
+            "ta_bort_kampanj":admin.ta_bort_kampanj,
+            "uppdatera_kampanj":admin.uppdatera_kampanj,
+            "visa_kampanj_lager":admin.visa_kampanj_lager,
+            "sök_kvitto_meny":admin.sök_kvitto_meny,
+            "produkt_meny":admin.produkt_meny,
+            "kampanj_meny":admin.kampanj_meny,
+            "uppdatera_produkt_namn":admin.uppdatera_produkt_namn,
+            "uppdatera_produkt_pris":admin.uppdatera_produkt_pris,
+            "uppdatera_kampanj_namn":admin.uppdatera_kampanj_namn,
+            "uppdatera_kampanj_pris":admin.uppdatera_kampanj_pris,
+            "sök_dagens_kvitto":admin.sök_dagens_kvitto,
+            "sök_datum_kvitto":admin.sök_datum_kvitto
+        }
+        admin.FUNKTION_HANTERARE = {}
+        for meny_namn, funktion_namn in data['FUNKTION_HANTERARE'].items():
+            admin.FUNKTION_HANTERARE[meny_namn] = {
+                int(key): funktion_namn_till_metod[value]
+                for key, value in funktion_namn.items()
+            }
+
+    def spara_produkt_och_kampanj(self):
         try:
             produkter_data = [produkt.till_dict() \
                               for produkt in self.produkter.values()]
@@ -192,7 +227,7 @@ class Lager:
         except Exception as e:
             print(f"Error: Något gick fel vid sparande av data: {str(e)}")
                  
-    def öppna_filer(self):
+    def ladda_produkt_och_kampanj(self):
         try:
             with open("produkt_och_kampanj.json", "r") as fil:
                 all_data = json.load(fil)
