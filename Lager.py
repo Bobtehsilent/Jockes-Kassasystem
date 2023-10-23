@@ -1,14 +1,11 @@
-
 from datetime import datetime
 import json
-from Kvitton import Kvitto
 from Produkter import Produkt
 from Kampanj import Kampanj
 class Lager:
     def __init__(self):
         self.kampanjer = {}
         self.produkter = {}
-        self.kvitto = Kvitto()
 
     def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris):
         produkt = Produkt(produkt_id, produkt_namn, produkt_pris)
@@ -252,5 +249,5 @@ class Lager:
             print("Datafilen hittades inte. Startar med en tom fil")
         except json.JSONDecodeError:
             print("Datan är inte i ett giltigt JSON format. Börjar med en tom fil.")
-        except Exception as e:
-            print(f"Ett oväntat fel inträffade: {str(e)}")
+        except Exception:
+            pass

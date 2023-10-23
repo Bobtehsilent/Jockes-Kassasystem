@@ -2,56 +2,32 @@
     "produkter": [
         {
             "produkt_id": "301",
-            "produkt_namn": "banan",
-            "produkt_pris": "24.95"
+            "produkt_namn": "bananer",
+            "produkt_pris": 24.95
         },
         {
             "produkt_id": "302",
-            "produkt_namn": "\u00e4pple",
+            "produkt_namn": "\u00e4pplen",
             "produkt_pris": 29.95
-        },
-        {
-            "produkt_id": "303",
-            "produkt_namn": "chips",
-            "produkt_pris": 999.0
-        },
-        {
-            "produkt_id": 402,
-            "produkt_namn": "ostron",
-            "produkt_pris": "250"
-        },
-        {
-            "produkt_id": "500",
-            "produkt_namn": "fisk",
-            "produkt_pris": "399"
         }
     ],
     "kampanjer": {
-        "303": {
-            "dyra chips": {
-                "kampanj_namn": "dyra chips",
-                "produkt_id": "303",
-                "kampanj_pris": 39.95,
-                "kampanj_start_datum": "2023-10-15",
-                "kampanj_slut_datum": "2023-10-25"
-            }
-        },
         "301": {
-            "Nya bananer": {
-                "kampanj_namn": "Nya bananer",
+            "Billiga bananer": {
+                "kampanj_namn": "Billiga bananer",
                 "produkt_id": "301",
-                "kampanj_pris": "12.95",
-                "kampanj_start_datum": "2023-10-23",
-                "kampanj_slut_datum": "2023-11-23"
+                "kampanj_pris": 12.95,
+                "kampanj_start_datum": "2023-10-10",
+                "kampanj_slut_datum": "2023-10-30"
             }
         },
-        "500": {
-            "Billig fisk": {
-                "kampanj_namn": "Billig fisk",
-                "produkt_id": "500",
-                "kampanj_pris": "79.95",
-                "kampanj_start_datum": "2023-10-10",
-                "kampanj_slut_datum": "2024-10-10"
+        "302": {
+            "Billiga \u00e4pplen": {
+                "kampanj_namn": "Billiga \u00e4pplen",
+                "produkt_id": "302",
+                "kampanj_pris": 15.0,
+                "kampanj_start_datum": "2023-10-20",
+                "kampanj_slut_datum": "2023-10-23"
             }
         }
     }

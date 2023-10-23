@@ -14,7 +14,10 @@ class Produkt:
         return self.__produkt_pris
     @produkt_pris.setter
     def produkt_pris(self, nytt_pris):
-        self.__produkt_pris = nytt_pris
+        try:
+            self.__produkt_pris = float(nytt_pris)
+        except ValueError:
+            print("Ogiltigt prisformat, priset måste vara en siffra.")
     @property
     def produkt_id(self):
         return self.__produkt_id

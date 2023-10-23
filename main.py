@@ -34,7 +34,7 @@ class Administrera:
                                 f" {min_värde} och {max_värde}")
                             continue
                 elif input_type == float:
-                    val == float(val)
+                    val = float(val)
                 return val
             except ValueError:
                 print("Error: Felaktig input format")
@@ -110,6 +110,7 @@ class Administrera:
             produkt_id = self.universal_input_hantering(
                 "Vad är ID på produkten du vill ta bort?: ")
             self.lager.ta_bort_produkt(produkt_id)
+            print(f"Varan {produkt_id} har tagits bort.")
         except ExitSubmenuException:
             return
 
