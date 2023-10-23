@@ -111,6 +111,8 @@ class Kvitto:
         kvitto_text += f"\nTotal summa: {self.total_summa():.2f} SEK\n" +"*"* 40 + "\n"
         with open(f"RECEIPT_{datum_nu}.txt", "a") as kvitto_fil:
             kvitto_fil.write(kvitto_text)
+        with open('Kvittonummer.txt', 'w') as kvittonummer_fil:
+            kvittonummer_fil.write(str(self.kvitto_nummer))
         return self.kvitto_nummer
     
     def skriv_kvitto_rad(self, rad):
@@ -124,14 +126,6 @@ class Kvitto:
         print(f"Total summa: {self.total_summa():.2f} SEK\n")
 
     def öppna_kvitto_nummer(self):
-        try:
-            datum_nu = self.datum.strftime("%Y%m%d")
-            max_kvitto_nummer = 0
-            with open(f"RECEIPT_{datum_nu}.txt", "r") as f:
-                for line in f:
-                    if line.startswith("Kvitto:"):
-                        kvitto_nummer = int(line.split()[1])
-                        max_kvitto_nummer = max(max_kvitto_nummer, kvitto_nummer)
-            self.kvitto_nummer = max_kvitto_nummer
-        except FileNotFoundError:
-            print(f"Ingen aktuell kvittofil. Öppnar en ny för: {datum_nu}")
+        with open('Kvittonummer.txt', 'r') as kvittonummer_fil:
+            nuvarande_kvitto_nummer = int(kvittonummer_fil.read().strip())
+        self.kvitto_nummer = nuvarande_kvitto_nummer

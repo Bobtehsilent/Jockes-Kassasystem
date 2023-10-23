@@ -71,7 +71,6 @@ class Lager:
     def lägg_till_kampanj(self,produkt_id, kampanj_namn, kampanj_pris, 
                           kampanj_start_datum, kampanj_slut_datum):
         if produkt_id in self.produkter:
-            print(f"Hämtat kampanj datum {kampanj_start_datum} - {kampanj_slut_datum}")
             if Kampanj.analysera_och_validera(kampanj_start_datum) and \
                 Kampanj.analysera_och_validera(kampanj_slut_datum):
                 if produkt_id not in self.kampanjer:
@@ -141,8 +140,7 @@ class Lager:
                       f"för produkten {produkt_id} existerar inte.")
         except Exception as e:
             print(f"Det uppstod ett fel vid borttagning av kampanj: {str(e)}")
-            
-
+          
     def visa_produkt_lager(self):
         lager_str = "Produkter:\n"
         try:
