@@ -200,8 +200,7 @@ class Lager:
         for meny_namn, funktion_namn in data['FUNKTION_HANTERARE'].items():
             admin.FUNKTION_HANTERARE[meny_namn] = {
                 int(key): funktion_namn_till_metod[value]
-                for key, value in funktion_namn.items()
-            }
+                for key, value in funktion_namn.items()}
 
     def spara_produkt_och_kampanj(self):
         try:
@@ -211,7 +210,6 @@ class Lager:
             for produkt_id, kampanjer in self.kampanjer.items():
                 kampanjer_data[produkt_id] = {namn: kampanj.till_dict() \
                                               for namn, kampanj in kampanjer.items()}
-
             data_att_spara = {
                 'produkter': produkter_data, 
                 'kampanjer': kampanjer_data,
@@ -232,7 +230,6 @@ class Lager:
                                     produkt_data['produkt_namn'], 
                                     produkt_data['produkt_pris'])
                     self.produkter[produkt.produkt_id] = produkt
-
                 self.kampanjer = {}
                 for produkt_id, kampanjer_av_produkt in all_data['kampanjer'].items():
                     self.kampanjer[produkt_id] = {}
@@ -242,8 +239,7 @@ class Lager:
                             kampanj_data['produkt_id'],
                             kampanj_data['kampanj_pris'],
                             Kampanj.analysera_och_validera(kampanj_data['kampanj_start_datum']),
-                            Kampanj.analysera_och_validera(kampanj_data['kampanj_slut_datum']),
-                        )
+                            Kampanj.analysera_och_validera(kampanj_data['kampanj_slut_datum']),)
                         self.kampanjer[produkt_id][kampanj_namn] = kampanj
         except FileNotFoundError:
             print("Datafilen hittades inte. Startar med en tom fil")
