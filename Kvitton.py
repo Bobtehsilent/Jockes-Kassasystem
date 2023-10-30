@@ -102,25 +102,27 @@ class Kvitto:
         return matchande_kvitton
     
     def generera_kvitto(self):
-        datum_nu = self.datum.strftime("%Y%m%d")
-        kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_nu}\n"
+        datum_för_txt = self.datum.strftime("%Y%m%d")
+        datum_för_rad = self.datum.strftime("%Y-%m-%d %H:%M")
+        kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_för_rad}\n"
         for item in self.kvitto_rad:
-            kvitto_text += (f"{item.produkt_namn}: {item.count} x "
+            kvitto_text += (f"{item.produkt_namn}: {item.count} * "
                             f"{'(Kampanjpris)' if item.kampanj_är_aktiv else ''}:"
                             f"{item.per_pris} SEK each = {item.total:.2f}\n")
         kvitto_text += f"\nTotal summa: {self.total_summa():.2f} SEK\n" +"*"* 40 + "\n"
-        with open(f"RECEIPT_{datum_nu}.txt", "a") as kvitto_fil:
+        with open(f"RECEIPT_{datum_för_txt}.txt", "a") as kvitto_fil:
             kvitto_fil.write(kvitto_text)
         with open('Kvittonummer.txt', 'w') as kvittonummer_fil:
             kvittonummer_fil.write(str(self.kvitto_nummer))
         return self.kvitto_nummer
     
     def skriv_kvitto_rad(self, rad):
-        print(f"{rad.produkt_namn}: {rad.count} x {rad.per_pris}: {rad.total:.2f}"
+        print(f"{rad.produkt_namn}: {rad.count} * {rad.per_pris}: {rad.total:.2f}"
                   f" SEK {'(Kampanjpris)' if rad.kampanj_är_aktiv else ''}")
 
     def skriv_kvitto(self):
-        print(f"Kvitto: {self.kvitto_nummer} | {self.datum.date()}")
+        datum_för_rad = self.datum.strftime("%Y-%m-%d %H:%M")
+        print(f"Kvitto: {self.kvitto_nummer} | {datum_för_rad}")
         for rad in self.kvitto_rad:
             self.skriv_kvitto_rad(rad)
         print(f"Total summa: {self.total_summa():.2f} SEK\n")
