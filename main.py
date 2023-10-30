@@ -297,7 +297,6 @@ def uppstart():
         with open("produkt_och_kampanj.json", "a") as f:    
             json.dump(default_data, f)
     lager.ladda_produkt_och_kampanj()
-    print(f"All loaded products: {lager.produkter}")
     kvitto.öppna_kvitto_nummer()
     admin_meny = Administrera(lager, kvitto)
     lager.ladda_meny_och_funktion_hanterare(admin_meny)

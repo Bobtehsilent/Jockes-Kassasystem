@@ -32,10 +32,6 @@ class KvittoRad:
     def per_pris(self):
         return self.__per_pris
     
-    @per_pris.setter
-    def per_pris(self, nytt_pris):
-        self.__per_pris = nytt_pris
-    
     @property
     def pris_typ(self):
         return self.__pris_typ
