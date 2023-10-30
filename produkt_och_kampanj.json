@@ -9,16 +9,21 @@
             "produkt_id": "302",
             "produkt_namn": "\u00e4pplen",
             "produkt_pris": 29.95
+        },
+        {
+            "produkt_id": "303",
+            "produkt_namn": "ost",
+            "produkt_pris": 129.0
         }
     ],
     "kampanjer": {
         "301": {
-            "Billiga bananer": {
-                "kampanj_namn": "Billiga bananer",
+            "Banan": {
+                "kampanj_namn": "Banan",
                 "produkt_id": "301",
                 "kampanj_pris": 12.95,
-                "kampanj_start_datum": "2023-10-10",
-                "kampanj_slut_datum": "2023-10-30"
+                "kampanj_start_datum": "2023-10-25",
+                "kampanj_slut_datum": "2023-11-30"
             }
         },
         "302": {
@@ -26,8 +31,8 @@
                 "kampanj_namn": "Billiga \u00e4pplen",
                 "produkt_id": "302",
                 "kampanj_pris": 15.0,
-                "kampanj_start_datum": "2023-10-20",
-                "kampanj_slut_datum": "2023-10-23"
+                "kampanj_start_datum": "2023-10-26",
+                "kampanj_slut_datum": "2023-11-25"
             }
         }
     }

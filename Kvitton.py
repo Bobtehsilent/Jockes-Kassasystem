@@ -105,9 +105,9 @@ class Kvitto:
         datum_nu = self.datum.strftime("%Y%m%d")
         kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_nu}\n"
         for item in self.kvitto_rad:
-            kvitto_text += f"{item.produkt_namn}: {item.count} x "
-            f"{'(Kampanjpris)' if item.kampanj_är_aktiv else ''}:"
-            f"{item.per_pris} SEK each = {item.total:.2f}\n"
+            kvitto_text += (f"{item.produkt_namn}: {item.count} x "
+                            f"{'(Kampanjpris)' if item.kampanj_är_aktiv else ''}:"
+                            f"{item.per_pris} SEK each = {item.total:.2f}\n")
         kvitto_text += f"\nTotal summa: {self.total_summa():.2f} SEK\n" +"*"* 40 + "\n"
         with open(f"RECEIPT_{datum_nu}.txt", "a") as kvitto_fil:
             kvitto_fil.write(kvitto_text)

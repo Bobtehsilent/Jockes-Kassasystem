@@ -60,16 +60,16 @@ class Lager:
                             best_kampanj = kampanj
                 if best_kampanj is not None and best_kampanj.kampanj_pris < per_pris:
                     return produkt_namn, best_kampanj.kampanj_pris, \
-                      best_kampanj.kampanj_start_datum, best_kampanj.kampanj_slut_datum
+                    best_kampanj.kampanj_start_datum, best_kampanj.kampanj_slut_datum
             return produkt_namn, per_pris, None, None
         else:
-            raise Exception("Produkten finns inte")
+            raise ValueError(f"Produkt med id {produkt_id} finns inte")
+        
 
     def lägg_till_kampanj(self,produkt_id, kampanj_namn, kampanj_pris, 
                           kampanj_start_datum, kampanj_slut_datum):
         if produkt_id in self.produkter:
-            if Kampanj.analysera_och_validera(kampanj_start_datum) and \
-                Kampanj.analysera_och_validera(kampanj_slut_datum):
+            if isinstance(kampanj_start_datum, datetime) and isinstance(kampanj_slut_datum, datetime):
                 if produkt_id not in self.kampanjer:
                     self.kampanjer[produkt_id] = {}
                 if kampanj_namn not in self.kampanjer[produkt_id]:
@@ -83,22 +83,6 @@ class Lager:
                 print("Ogiltigt datumformat. Kampanjen har inte lagts till.")
         else:
             print(f"Produkten med namnet {produkt_id} existerar inte.")
-
-    def skapa_kampanj_datum(self):
-        while True:
-            kampanj_start_datum = input("Skriv in startdatum för kampanjen"
-                                        " (YYYY-MM-DD): ")
-            kampanj_slut_datum = input("Skriv in slutdatum för kampanjen "
-                                       "(YYYY-MM-DD): ")
-
-            analyserad_start_datum = Kampanj.analysera_och_validera(kampanj_start_datum)
-            analyserad_slut_datum = Kampanj.analysera_och_validera(kampanj_slut_datum)
-
-            if analyserad_start_datum and analyserad_slut_datum:
-                if analyserad_start_datum >= analyserad_slut_datum:
-                    print("Kampanjen måste ta slut efter startdatumet")
-                else:
-                    return kampanj_start_datum, kampanj_slut_datum
                 
     def visa_kampanjer_för_produkt(self, produkt_id):
         kampanj_lista = []
@@ -111,7 +95,8 @@ class Lager:
         return kampanj_lista
                 
     def uppdatera_kampanj(self, produkt_id, kampanj_namn, 
-                          nytt_namn=None, nytt_pris=None):
+                          nytt_namn=None, nytt_pris=None,
+                          nytt_start_datum=None, nytt_slut_datum=None):
         kampanj = self.kampanjer[produkt_id][kampanj_namn]
         if nytt_namn is not None and nytt_namn != kampanj_namn:
             self.kampanjer[produkt_id][nytt_namn] = \
@@ -122,6 +107,11 @@ class Lager:
             kampanj.kampanj_pris = nytt_pris
             print(f"Kampanjen '{kampanj_namn}' för produkten {produkt_id}" 
               f" har uppdaterats med nytt pris: {nytt_pris} kr.")
+        if nytt_start_datum is not None and nytt_slut_datum is not None:
+            kampanj.kampanj_start_datum = nytt_start_datum
+            kampanj.kampanj_slut_datum = nytt_slut_datum
+            print(f"Kampanjen '{kampanj_namn}' för produkten {produkt_id}" 
+              f" har uppdaterats med nya datum: {nytt_start_datum:%Y-%m-%d} - {nytt_slut_datum:%Y-%m-%d}.")
 
     def ta_bort_kampanj(self, produkt_id, kampanj_namn):
         try:
@@ -193,6 +183,7 @@ class Lager:
             "uppdatera_produkt_pris":admin.uppdatera_produkt_pris,
             "uppdatera_kampanj_namn":admin.uppdatera_kampanj_namn,
             "uppdatera_kampanj_pris":admin.uppdatera_kampanj_pris,
+            "uppdatera_kampanj_datum":admin.uppdatera_kampanj_datum,
             "sök_dagens_kvitto":admin.sök_dagens_kvitto,
             "sök_datum_kvitto":admin.sök_datum_kvitto
         }

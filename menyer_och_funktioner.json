@@ -38,6 +38,7 @@
         "uppdatera_kampanj": [
             "Uppdatera namn",
             "Uppdatera pris",
+            "Uppdatera datum",
             "Avbryt uppdatering"
         ]
     },
@@ -69,7 +70,8 @@
         },
         "uppdatera_kampanj": {
             "1": "uppdatera_kampanj_namn",
-            "2": "uppdatera_kampanj_pris"
+            "2": "uppdatera_kampanj_pris",
+            "3": "uppdatera_kampanj_datum"
         },
         "kvitto": {
             "1": "s\u00f6k_dagens_kvitto",

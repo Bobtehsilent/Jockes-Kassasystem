@@ -35,6 +35,8 @@ class Administrera:
                             continue
                 elif input_type == float:
                     val = float(val)
+                elif input_type == datetime:
+                    val = datetime.strptime(val, "%Y-%m-%d")
                 return val
             except ValueError:
                 print("Error: Felaktig input format")
@@ -155,11 +157,25 @@ class Administrera:
                 "Vad ska kampanjen heta: ").capitalize()
             kampanj_pris = self.universal_input_hantering(
                     "Mata in nya kampanj priset: ", input_type=float)
-            kampanj_start_datum, kampanj_slut_datum = self.lager.skapa_kampanj_datum()
+            kampanj_start_datum, kampanj_slut_datum = self.skapa_kampanj_datum()
             self.lager.lägg_till_kampanj(produkt.produkt_id, kampanj_namn, kampanj_pris,\
                                         kampanj_start_datum, kampanj_slut_datum)
         except ExitSubmenuException:
             return
+    
+    def skapa_kampanj_datum(self):
+        while True:
+            kampanj_start_datum = self.universal_input_hantering(
+                "Skriv in startdatum för kampanjen (YYYY-MM-DD): ",
+                input_type=datetime)
+            kampanj_slut_datum = self.universal_input_hantering(
+                "Skriv in slutdatum för kampanjen (YYYY-MM-DD): ",
+                input_type=datetime)
+            if kampanj_start_datum >= kampanj_slut_datum:
+                print("Kampanjen måste ta slut efter startdatumet")
+                return self.skapa_kampanj_datum()
+            else:
+                return kampanj_start_datum, kampanj_slut_datum
         
     def ta_bort_kampanj(self):
         self.visa_kampanj_lager()
@@ -208,24 +224,32 @@ class Administrera:
             self.lager.uppdatera_kampanj(produkt_id, kampanj_namn, nytt_pris=nytt_pris)
         except ExitSubmenuException:
             return
-
+    def uppdatera_kampanj_datum(self, produkt_id, kampanj_namn):
+        try:
+            ny_start_datum, ny_slut_datum = self.skapa_kampanj_datum()
+            self.lager.uppdatera_kampanj(produkt_id, kampanj_namn, 
+                                         nytt_start_datum=ny_start_datum, 
+                                         nytt_slut_datum=ny_slut_datum)
+        except ExitSubmenuException:
+            return
+        
     def visa_kampanj_lager(self):
         print(self.lager.visa_kampanj_lager())
 
     def kund_input(self):
-        try:
-            while True:
-                kassa_input = input(": ").strip().split(' ')
-                kommando = kassa_input[0].lower()
-                kvantitet = kassa_input[1:]
-                if kommando == 'pay' and not kvantitet:
-                    return kommando, None
-                elif kommando and kvantitet:
-                    return kommando, kvantitet
-                else:
-                    print("Felaktig input, försök igen")
-        except ExitSubmenuException:
-            return
+        while True:
+            kassa_input = self.universal_input_hantering(": ", input_type=str)
+            kassa_input_list = kassa_input.split()
+            kommando = kassa_input_list[0].lower()
+            kvantitet = kassa_input_list[1:]
+            if kommando == 'pay' and not kvantitet:
+                return kommando, None
+            elif kommando and kvantitet:
+                return kommando, kvantitet
+            else:
+                print("Felaktig input, försök igen")
+        return None, None
+
         
     def nytt_kvitto(self):
         self.kvitto.kvitto_nummer += 1
@@ -233,6 +257,8 @@ class Administrera:
             try:
                 print("Kommandon: <produktid> <Space> <antal> | PAY")
                 kommando, kvantitet = self.kund_input()
+                if kommando is None and kvantitet is None:
+                    return
                 if kommando == 'pay':
                     self.kvitto.generera_kvitto()
                     self.kvitto.skriv_kvitto()
@@ -240,14 +266,18 @@ class Administrera:
                     break
                 else:
                     produkt_id = kommando
-                    antal = kvantitet[0]
-                    try:
-                        namn, belopp, kampanj_start_datum, kampanj_slut_datum = \
-                            self.lager.hämta_produkt_info(produkt_id)
-                    except IndexError:
-                        print("Error: produkt informationen är ej komplett")
-                    self.kvitto.lägg_till(namn, int(antal), float(belopp), 
+                    antal = int(kvantitet[0])
+                    if antal <= 0:
+                        print("Felaktigt antal, måste vara större än 0.")
+                        continue
+                    produkt_info = self.lager.hämta_produkt_info(produkt_id)
+                    if produkt_info is None:
+                        continue
+                    namn, belopp, kampanj_start_datum, kampanj_slut_datum = produkt_info
+                    self.kvitto.lägg_till(namn, antal, float(belopp), 
                                             kampanj_start_datum, kampanj_slut_datum)
+            except ValueError as e:
+                print(e)
             except ExitSubmenuException:
                 break
 
