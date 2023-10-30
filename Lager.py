@@ -31,6 +31,8 @@ class Lager:
     def ta_bort_produkt(self, produkt_id):
         if produkt_id in self.produkter:
             del self.produkter[produkt_id]
+        if produkt_id in self.kampanjer:
+            del self.kampanjer[produkt_id]
         else:
             print(f"Produkten med id {produkt_id} existerar inte.")
 
