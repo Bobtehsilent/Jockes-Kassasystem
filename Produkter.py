@@ -3,9 +3,6 @@ class Produkt:
         self.__produkt_id = produkt_id
         self.__produkt_pris = produkt_pris
         self.__produkt_namn = produkt_namn
-        
-        if self.__produkt_pris < 0:
-            raise ValueError("Varans pris måste vara positiv.")
     @property
     def produkt_namn(self):
         return self.__produkt_namn
@@ -17,9 +14,10 @@ class Produkt:
         return self.__produkt_pris
     @produkt_pris.setter
     def produkt_pris(self, nytt_pris):
-        if not isinstance(nytt_pris, (int, float)) or nytt_pris < 0:
-            raise ValueError("Error: Pris måste vara ett positivt heltal")
-        self.__produkt_pris = nytt_pris
+        try:
+            self.__produkt_pris = float(nytt_pris)
+        except ValueError:
+            print("Ogiltigt prisformat, priset måste vara en siffra.")
     @property
     def produkt_id(self):
         return self.__produkt_id
