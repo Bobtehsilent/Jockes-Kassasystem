@@ -15,7 +15,7 @@
         {
             "produkt_id": "303",
             "produkt_namn": "ostron",
-            "produkt_pris": 12.95,
+            "produkt_pris": 39.95,
             "pris_typ": "kilo"
         }
     ],
@@ -24,9 +24,9 @@
             "Billiga ostron": {
                 "kampanj_namn": "Billiga ostron",
                 "produkt_id": "303",
-                "kampanj_pris": 5.95,
-                "kampanj_start_datum": "2023-10-30",
-                "kampanj_slut_datum": "2023-11-30"
+                "kampanj_pris": 15.95,
+                "kampanj_start_datum": "2023-10-20",
+                "kampanj_slut_datum": "2023-11-20"
             }
         }
     }
