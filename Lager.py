@@ -7,8 +7,9 @@ class Lager:
         self.kampanjer = {}
         self.produkter = {}
 
-    def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris):
-        produkt = Produkt(produkt_id, produkt_namn, produkt_pris)
+    def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris, pris_typ):
+        pris_typ_mapping = {1: 'kilo', 2: 'styck'}
+        produkt = Produkt(produkt_id, produkt_namn, produkt_pris, pris_typ_mapping[pris_typ])
         if produkt.produkt_id in self.produkter:
             print(f"Produkt med id {produkt.produkt_id} existerar redan")
         else:
@@ -49,6 +50,7 @@ class Lager:
             produkt = self.produkter[produkt_id]
             produkt_namn = produkt.produkt_namn
             per_pris = produkt.produkt_pris
+            pris_typ = produkt.pris_typ
             if produkt_id in self.kampanjer:
                 best_kampanj = None
                 current_date = datetime.now()
@@ -60,9 +62,9 @@ class Lager:
                             kampanj.kampanj_pris < best_kampanj.kampanj_pris:
                             best_kampanj = kampanj
                 if best_kampanj is not None and best_kampanj.kampanj_pris < per_pris:
-                    return produkt_namn, best_kampanj.kampanj_pris, \
-                    best_kampanj.kampanj_start_datum, best_kampanj.kampanj_slut_datum
-            return produkt_namn, per_pris, None, None
+                    return produkt_namn, best_kampanj.kampanj_pris, pris_typ , \
+                        best_kampanj.kampanj_start_datum, best_kampanj.kampanj_slut_datum
+            return produkt_namn, per_pris, pris_typ, None, None
         else:
             raise ValueError(f"Produkt med id {produkt_id} finns inte")
         
@@ -220,7 +222,8 @@ class Lager:
                 for produkt_data in all_data['produkter']:
                     produkt = Produkt(produkt_data['produkt_id'], 
                                     produkt_data['produkt_namn'], 
-                                    produkt_data['produkt_pris'])
+                                    produkt_data['produkt_pris'],
+                                    produkt_data['pris_typ'])
                     self.produkter[produkt.produkt_id] = produkt
                 self.kampanjer = {}
                 for produkt_id, kampanjer_av_produkt in all_data['kampanjer'].items():

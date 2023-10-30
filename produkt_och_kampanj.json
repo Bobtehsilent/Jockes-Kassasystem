@@ -2,37 +2,31 @@
     "produkter": [
         {
             "produkt_id": "301",
-            "produkt_namn": "Banan",
-            "produkt_pris": 39.95
+            "produkt_namn": "banan",
+            "produkt_pris": 12.95,
+            "pris_typ": "kilo"
         },
         {
             "produkt_id": "302",
-            "produkt_namn": "\u00e4pplen",
-            "produkt_pris": 29.95
+            "produkt_namn": "chips",
+            "produkt_pris": 29.95,
+            "pris_typ": "styck"
         },
         {
             "produkt_id": "303",
-            "produkt_namn": "ost",
-            "produkt_pris": 129.0
+            "produkt_namn": "ostron",
+            "produkt_pris": 12.95,
+            "pris_typ": "kilo"
         }
     ],
     "kampanjer": {
-        "301": {
-            "Banan": {
-                "kampanj_namn": "Banan",
-                "produkt_id": "301",
-                "kampanj_pris": 12.95,
-                "kampanj_start_datum": "2023-10-25",
+        "303": {
+            "Billiga ostron": {
+                "kampanj_namn": "Billiga ostron",
+                "produkt_id": "303",
+                "kampanj_pris": 5.95,
+                "kampanj_start_datum": "2023-10-30",
                 "kampanj_slut_datum": "2023-11-30"
-            }
-        },
-        "302": {
-            "Billiga \u00e4pplen": {
-                "kampanj_namn": "Billiga \u00e4pplen",
-                "produkt_id": "302",
-                "kampanj_pris": 15.0,
-                "kampanj_start_datum": "2023-10-26",
-                "kampanj_slut_datum": "2023-11-25"
             }
         }
     }

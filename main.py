@@ -102,7 +102,9 @@ class Administrera:
                 "Välj ett namn för produkten: ")
             produkt_pris = self.universal_input_hantering(
                 "Välj ett pris på varan: ", input_type=float)
-            self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris)
+            pris_typ = self.universal_input_hantering(
+                "Välj pristyp\n1. Kilopris\n2. Styckpris\n: ", min_värde=1, max_värde=2, input_type=int)
+            self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris, pris_typ)
         except ExitSubmenuException:
             return
 
@@ -247,7 +249,7 @@ class Administrera:
                 return kommando, kvantitet
             else:
                 print("Felaktig input, försök igen")
-        return None, None
+            return None, None
 
         
     def nytt_kvitto(self):
@@ -265,15 +267,15 @@ class Administrera:
                     break
                 else:
                     produkt_id = kommando
-                    antal = int(kvantitet[0])
+                    antal = float(kvantitet[0])
                     if antal <= 0:
                         print("Felaktigt antal, måste vara större än 0.")
                         continue
                     produkt_info = self.lager.hämta_produkt_info(produkt_id)
                     if produkt_info is None:
                         continue
-                    namn, belopp, kampanj_start_datum, kampanj_slut_datum = produkt_info
-                    self.kvitto.lägg_till(namn, antal, float(belopp), 
+                    namn, belopp, pris_typ, kampanj_start_datum, kampanj_slut_datum = produkt_info
+                    self.kvitto.lägg_till(namn, antal, float(belopp), pris_typ, 
                                             kampanj_start_datum, kampanj_slut_datum)
             except ValueError as e:
                 print(e)
