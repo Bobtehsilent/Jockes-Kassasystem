@@ -103,7 +103,6 @@ class Administrera:
             produkt_pris = self.universal_input_hantering(
                 "Välj ett pris på varan: ", input_type=float)
             self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris)
-            print(f"Produkten {produkt_namn} har lagts till med id {produkt_id}")
         except ExitSubmenuException:
             return
 

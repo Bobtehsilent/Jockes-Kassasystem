@@ -2,8 +2,8 @@
     "produkter": [
         {
             "produkt_id": "301",
-            "produkt_namn": "bananer",
-            "produkt_pris": 24.95
+            "produkt_namn": "Banan",
+            "produkt_pris": 39.95
         },
         {
             "produkt_id": "302",

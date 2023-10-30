@@ -13,6 +13,7 @@ class Lager:
             print(f"Produkt med id {produkt.produkt_id} existerar redan")
         else:
             self.produkter[produkt.produkt_id] = produkt
+            print(f"Produkten {produkt_namn} har lagts till med id {produkt_id}")
 
     def uppdatera_produkt(self, produkt_id, attribut, nytt_värde):
         if attribut == 'name':
