@@ -4,8 +4,30 @@
             "produkt_id": "301",
             "produkt_namn": "banan",
             "produkt_pris": 12.95,
-            "produkt_pris_typ": "per kilo"
+            "pris_typ": "kilo"
+        },
+        {
+            "produkt_id": "302",
+            "produkt_namn": "chips",
+            "produkt_pris": 29.95,
+            "pris_typ": "styck"
+        },
+        {
+            "produkt_id": "303",
+            "produkt_namn": "ostron",
+            "produkt_pris": 12.95,
+            "pris_typ": "kilo"
         }
     ],
-    "kampanjer": {}
+    "kampanjer": {
+        "303": {
+            "Billiga ostron": {
+                "kampanj_namn": "Billiga ostron",
+                "produkt_id": "303",
+                "kampanj_pris": 5.95,
+                "kampanj_start_datum": "2023-10-30",
+                "kampanj_slut_datum": "2023-11-30"
+            }
+        }
+    }
 }

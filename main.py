@@ -103,7 +103,7 @@ class Administrera:
             produkt_pris = self.universal_input_hantering(
                 "Välj ett pris på varan: ", input_type=float)
             pris_typ = self.universal_input_hantering(
-                "Välj pristyp\n1. Per kilo\n2. Styckpris\n: ", min_värde=1, max_värde=2)
+                "Välj pristyp\n1. Kilopris\n2. Styckpris\n: ", min_värde=1, max_värde=2, input_type=int)
             self.lager.lägg_till_produkt(produkt_id, produkt_namn, produkt_pris, pris_typ)
         except ExitSubmenuException:
             return
@@ -274,8 +274,8 @@ class Administrera:
                     produkt_info = self.lager.hämta_produkt_info(produkt_id)
                     if produkt_info is None:
                         continue
-                    namn, belopp, kampanj_start_datum, kampanj_slut_datum = produkt_info
-                    self.kvitto.lägg_till(namn, antal, float(belopp), 
+                    namn, belopp, pris_typ, kampanj_start_datum, kampanj_slut_datum = produkt_info
+                    self.kvitto.lägg_till(namn, antal, float(belopp), pris_typ, 
                                             kampanj_start_datum, kampanj_slut_datum)
             except ValueError as e:
                 print(e)
@@ -297,6 +297,7 @@ def uppstart():
         with open("produkt_och_kampanj.json", "a") as f:    
             json.dump(default_data, f)
     lager.ladda_produkt_och_kampanj()
+    print(f"All loaded products: {lager.produkter}")
     kvitto.öppna_kvitto_nummer()
     admin_meny = Administrera(lager, kvitto)
     lager.ladda_meny_och_funktion_hanterare(admin_meny)

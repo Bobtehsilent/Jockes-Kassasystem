@@ -26,10 +26,10 @@ class Produkt:
     def produkt_id(self, nytt_id):
         self.__produkt_id = nytt_id
     @property
-    def produkt_pris_typ(self):
+    def pris_typ(self):
         return self.__pris_typ
-    @produkt_pris_typ.setter
-    def produkt_pris_typ(self, ny_pris_typ):
+    @pris_typ.setter
+    def pris_typ(self, ny_pris_typ):
         self.__pris_typ = ny_pris_typ
 
     def till_dict(self):
@@ -45,7 +45,7 @@ class Produkt:
             'produkt_id':self.produkt_id,
             'produkt_namn':self.produkt_namn,
             'produkt_pris':self.produkt_pris,
-            'produkt_pris_typ':self.produkt_pris_typ
+            'pris_typ':self.pris_typ
         }
     def __str__(self) -> str:
         return (f"Produkt id: {self.produkt_id} | Produkt namn: {self.produkt_namn} "

@@ -1,11 +1,12 @@
 from datetime import datetime
 
 class KvittoRad:
-    def __init__(self, produkt_namn:str, count:int, per_pris:float, 
+    def __init__(self, produkt_namn:str, count:int, per_pris:float, pris_typ:str, 
                  kampanj_start_datum=None, kampanj_slut_datum=None, kampanj_pris=None):
         self.__produkt_namn = produkt_namn
         self.__count = count
         self.__per_pris = per_pris
+        self.__pris_typ = pris_typ
         self.__kampanj_start_datum = kampanj_start_datum
         self.__kampanj_slut_datum = kampanj_slut_datum
         self.__kampanj_pris = kampanj_pris
@@ -34,6 +35,10 @@ class KvittoRad:
     @per_pris.setter
     def per_pris(self, nytt_pris):
         self.__per_pris = nytt_pris
+    
+    @property
+    def pris_typ(self):
+        return self.__pris_typ
 
     @property
     def kampanj_pris(self):
@@ -107,8 +112,8 @@ class Kvitto:
         kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_för_rad}\n"
         for item in self.kvitto_rad:
             kvitto_text += (f"{item.produkt_namn}: {item.count} * "
-                            f"{'(Kampanjpris)' if item.kampanj_är_aktiv else ''}:"
-                            f"{item.per_pris} SEK each = {item.total:.2f}\n")
+                            f"{item.per_pris}/{item.pris_typ} each = {item.total:.2f}"
+                            f"{'(Kampanjpris)' if item.kampanj_är_aktiv else ''}\n")
         kvitto_text += f"\nTotal summa: {self.total_summa():.2f} SEK\n" +"*"* 40 + "\n"
         with open(f"RECEIPT_{datum_för_txt}.txt", "a") as kvitto_fil:
             kvitto_fil.write(kvitto_text)
@@ -117,7 +122,7 @@ class Kvitto:
         return self.kvitto_nummer
     
     def skriv_kvitto_rad(self, rad):
-        print(f"{rad.produkt_namn}: {rad.count} * {rad.per_pris}: {rad.total:.2f}"
+        print(f"{rad.produkt_namn}: {rad.count} * {rad.per_pris}/{rad.pris_typ}: {rad.total:.2f}"
                   f" SEK {'(Kampanjpris)' if rad.kampanj_är_aktiv else ''}")
 
     def skriv_kvitto(self):
