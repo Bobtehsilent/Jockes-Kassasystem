@@ -7,8 +7,9 @@ class Lager:
         self.kampanjer = {}
         self.produkter = {}
 
-    def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris):
-        produkt = Produkt(produkt_id, produkt_namn, produkt_pris)
+    def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris, pris_typ):
+        pris_typ_mapping = {1: 'per kilo', 2: 'styckpris'}
+        produkt = Produkt(produkt_id, produkt_namn, produkt_pris, pris_typ_mapping[int(pris_typ)])
         if produkt.produkt_id in self.produkter:
             print(f"Produkt med id {produkt.produkt_id} existerar redan")
         else:
