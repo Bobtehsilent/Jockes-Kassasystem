@@ -2,11 +2,12 @@ from datetime import datetime
 import json
 from Produkter import Produkt
 from Kampanj import Kampanj
-class Lager:
+
+class Lager: #Funktionalitets klassen har jag tänkt det som. Den tar all information från produkt/kampanj och sätter ihop pusslet
     def __init__(self):
         self.kampanjer = {}
         self.produkter = {}
-
+#Generellt är alla funktioner självförklarande i namnet
     def lägg_till_produkt(self,produkt_id, produkt_namn, produkt_pris, pris_typ):
         pris_typ_mapping = {1: 'kilo', 2: 'styck'}
         produkt = Produkt(produkt_id, produkt_namn, produkt_pris, pris_typ_mapping[pris_typ])
@@ -47,7 +48,7 @@ class Lager:
             else:
                 return None
             
-    def hämta_produkt_info(self, produkt_id):
+    def hämta_produkt_info(self, produkt_id): #Viktig funktion, vid handling hämtar denna funktion all info från dictionaryn.
         if produkt_id in self.produkter:
             produkt = self.produkter[produkt_id]
             produkt_namn = produkt.produkt_namn
@@ -98,8 +99,8 @@ class Lager:
         else:
             print(f"Inga kampanjer hittades för produkt {produkt_id}.")
         return kampanj_lista
-                
-    def uppdatera_kampanj(self, produkt_id, kampanj_namn, 
+    
+    def uppdatera_kampanj(self, produkt_id, kampanj_namn,  
                           nytt_namn=None, nytt_pris=None,
                           nytt_start_datum=None, nytt_slut_datum=None):
         kampanj = self.kampanjer[produkt_id][kampanj_namn]
@@ -166,7 +167,7 @@ class Lager:
             lager_str += f"Error med kampanj: {e}\n" 
         return lager_str  
 
-    def ladda_meny_och_funktion_hanterare(self, admin):
+    def ladda_meny_och_funktion_hanterare(self, admin): #Ser väldigt konstig ut men den laddar alla menyer och menyval från en jsonfil.
         with open('menyer_och_funktioner.json') as f:
             data = json.load(f)
         admin.MENYER = data['MENYER']
@@ -198,7 +199,7 @@ class Lager:
                 int(key): funktion_namn_till_metod[value]
                 for key, value in funktion_namn.items()}
 
-    def spara_produkt_och_kampanj(self):
+    def spara_produkt_och_kampanj(self): #Sparar ner produkter/kampanjer om nya blivit tillagda i sin json fil.
         try:
             produkter_data = [produkt.till_dict() \
                               for produkt in self.produkter.values()]
@@ -216,7 +217,7 @@ class Lager:
         except Exception as e:
             print(f"Error: Något gick fel vid sparande av data: {str(e)}")
                  
-    def ladda_produkt_och_kampanj(self):
+    def ladda_produkt_och_kampanj(self): #Laddar all data från json filer
         try:
             with open("produkt_och_kampanj.json", "r") as fil:
                 all_data = json.load(fil)

@@ -4,21 +4,22 @@ import os
 from Lager import Lager
 from Kvitton import Kvitto
 
-class ExitSubmenuException(Exception):
+class ExitSubmenuException(Exception): #Ett error hantering för att backa tillbaka till nuvarande meny i alla inputs
     def __init__(self, tillbaka_till_meny=None):
         self.tillbaka_till_meny = tillbaka_till_meny
 
-class Administrera:
+class Administrera: #En mer strukturell klass för mig att följa med. Generellt har funktionerna en rätt straightforward namngivning
     def __init__(self,lager,kvitto):
         self.lager = lager
         self.kvitto = kvitto
         self.MENYER = {}
         self.FUNKTION_HANTERARE = {}
 
+    #En viktig funktion, hanterar nästan alla inputs för att validera och skicka tillbaka
     def universal_input_hantering(self, prompt, input_type=str, 
                                   min_värde=None, max_värde=None, stäng_på_0=True):
         while True:
-            val = input(prompt)
+            val = input(prompt) 
             if stäng_på_0 and (val == '0' or val == 0):
                 print("Går tillbaka.")
                 raise ExitSubmenuException()
@@ -26,7 +27,7 @@ class Administrera:
                 self.lager.spara_produkt_och_kampanj()
                 exit()
             try:
-                if input_type == int:
+                if input_type == int: #Om man skickat med input type konverterar den här för felhantering.
                     val = int(val)
                     if min_värde is not None and max_värde is not None:
                         if val < min_värde or val > max_värde:
@@ -38,13 +39,14 @@ class Administrera:
                 elif input_type == datetime:
                     val = datetime.strptime(val, "%Y-%m-%d")
                 return val
-            except ValueError:
+            except ValueError: 
                 print("Error: Felaktig input format")
 
-    def submeny_hanterare(self, menu_name, *args):
+#Istället för att skriva ut långa menyer är den den här som hanterar det.
+    def submeny_hanterare(self, menu_name, *args): 
         while True:
             try:
-                val = self.print_meny(menu_name)
+                val = self.print_meny(menu_name) #den kallar till nästa funktion som printar och tar inputs
                 if val == 0 and menu_name == 'main':
                     self.lager.spara_produkt_och_kampanj()
                     exit()
@@ -59,7 +61,7 @@ class Administrera:
                 else: 
                     break
     
-    def print_meny(self, meny_namn):
+    def print_meny(self, meny_namn): #Printar ut menyer och menyvalen istället för att göra flera långa menyer
         for idx, val in enumerate(self.MENYER[meny_namn]):
             if idx == len(self.MENYER[meny_namn]) -1:
                 print(f"0. {val}")
@@ -78,7 +80,7 @@ class Administrera:
 
     def sök_dagens_kvitto(self):
         sök_kriterie = datetime.now().strftime("%Y%m%d")
-        matchande_kvitton = self.kvitto._sök_kvitto(sök_kriterie)
+        matchande_kvitton = self.kvitto.sök_kvitto(sök_kriterie)
         if matchande_kvitton:
             for matchande_kvitto in matchande_kvitton:
                 print(matchande_kvitto)
@@ -86,7 +88,7 @@ class Administrera:
     def sök_datum_kvitto(self):
         sök_kriterie = self.universal_input_hantering(
             "Ange datum (YYYYMMDD): ")
-        matchande_kvitton = self.kvitto._sök_kvitto(sök_kriterie)
+        matchande_kvitton = self.kvitto.sök_kvitto(sök_kriterie)
         if matchande_kvitton:
             for matchande_kvitto in matchande_kvitton:
                 print(matchande_kvitto)
@@ -237,7 +239,7 @@ class Administrera:
     def visa_kampanj_lager(self):
         print(self.lager.visa_kampanj_lager())
 
-    def kund_input(self):
+    def kund_input(self): #tar input från nytt kvitto och delar upp och skickar tillbaka
         while True:
             kassa_input = self.universal_input_hantering(": ", input_type=str)
             kassa_input_list = kassa_input.split()
@@ -252,7 +254,7 @@ class Administrera:
             return None, None
 
         
-    def nytt_kvitto(self):
+    def nytt_kvitto(self): #Hanterar "Handlingen". 
         self.kvitto.kvitto_nummer += 1
         while True:
             try:
@@ -289,7 +291,7 @@ class Administrera:
         self.submeny_hanterare('main')
 
 @staticmethod
-def uppstart():
+def uppstart(): #Startar upp hela programmet, laddar information från filer och sätter upp variabler för kvitto, lager klasser
     kvitto = Kvitto()
     lager = Lager()
     if not os.path.isfile("produkt_och_kampanj.json"):
