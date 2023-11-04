@@ -1,4 +1,5 @@
 from datetime import datetime
+#Klass för att skapa objekten kring kampanjer, samt validering av datum.
 class Kampanj:
     def __init__(self, kampanj_namn, produkt_id, kampanj_pris, 
                  kampanj_start_datum, kampanj_slut_datum):
@@ -67,7 +68,7 @@ class Kampanj:
             print("Received an unexpected type, raising ValueError.")
             raise ValueError("Oväntad typ: förväntar str eller datetime")
 
-    def till_dict(self):
+    def till_dict(self):    #Formatterar ner kampanjinformationen för att sparas i en jsonfil
         return {
             'kampanj_namn': self.kampanj_namn,
             'produkt_id': self.produkt_id,

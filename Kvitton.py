@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class KvittoRad:
+class KvittoRad: #skapar objekten för varje rad för kvittot
     def __init__(self, produkt_namn:str, count:int, per_pris:float, pris_typ:str, 
                  kampanj_start_datum=None, kampanj_slut_datum=None, kampanj_pris=None):
         self.__produkt_namn = produkt_namn
@@ -42,7 +42,7 @@ class KvittoRad:
             return self.__kampanj_pris
         return None
     
-    @property
+    @property #kollar om en kampanj är aktuell.
     def kampanj_är_aktiv(self):
         if self.__kampanj_start_datum and self.__kampanj_slut_datum:
             nuvarande_datum = datetime.now().date()
@@ -51,7 +51,7 @@ class KvittoRad:
             return kampanj_start_datum <= nuvarande_datum <= kampanj_slut_datum
         return False
 
-class Kvitto:
+class Kvitto: #Funktionalitet för att skapa kvitton och hålla koll på kvittonummer
     def __init__(self) -> None:
         self.__datum = datetime.now()
         self.kvitto_rad = []
@@ -75,6 +75,7 @@ class Kvitto:
     def total_summa(self):
         return sum(item.total for item in self.kvitto_rad)
     
+    #Funktion för att lägga till varor i kvittot och sedan printa ut, används vid "shopping"
     def lägg_till(self, produkt_namn:str, count:int, per_pris:float, 
                   kampanj_start_datum=None, kampanj_slut_datum=None, kampanj_pris=None):
         for produkt in self.kvitto_rad:
@@ -88,7 +89,7 @@ class Kvitto:
         for rad in self.kvitto_rad:
             self.skriv_kvitto_rad(rad)
     
-    def _sök_kvitto(self, sök_kriterie):
+    def sök_kvitto(self, sök_kriterie): #Söker kvitto efter valt datum och returnerar en lista med alla kvitton.
         matchande_kvitton = []
         try:
             with open(f"RECEIPT_{sök_kriterie}.txt", "r") as kvitto_fil:
@@ -102,7 +103,7 @@ class Kvitto:
             print("Error: Inga kvitton hittades.")
         return matchande_kvitton
     
-    def generera_kvitto(self):
+    def generera_kvitto(self): #Aktiveras av att betalaa (pay). Skapar/lägger till i kvitto textfil samt uppdaterar kvittonummer fil
         datum_för_txt = self.datum.strftime("%Y%m%d")
         datum_för_rad = self.datum.strftime("%Y-%m-%d %H:%M")
         kvitto_text = f"\nKvitto: {self.kvitto_nummer} : {datum_för_rad}\n"
@@ -121,7 +122,7 @@ class Kvitto:
         print(f"{rad.produkt_namn}: {rad.count} * {rad.per_pris}/{rad.pris_typ}: {rad.total:.2f}"
                   f" SEK {'(Kampanjpris)' if rad.kampanj_är_aktiv else ''}")
 
-    def skriv_kvitto(self):
+    def skriv_kvitto(self): #Skriver ut nuvarande kvitto efter varje gång man lägger till en vara (during shopping)
         datum_för_rad = self.datum.strftime("%Y-%m-%d %H:%M")
         print(f"Kvitto: {self.kvitto_nummer} | {datum_för_rad}")
         for rad in self.kvitto_rad:
